@@ -124,11 +124,13 @@ O sistema deve utilizar contraste adequado, fontes legíveis e organização vis
 
 ## Diagrama de casos de uso
 
+<img width="828" height="628" alt="image6" src="https://github.com/user-attachments/assets/fd4152a3-95ff-401d-971f-ffd6d2288e77" />
 
 
 ## Diagrama de classes
 
----
+<img width="868" height="677" alt="image5" src="https://github.com/user-attachments/assets/56331487-1443-476d-ba01-259b39fad36c" />
+
 
 ## Diagramas de sequência 
 
@@ -136,4 +138,10 @@ O sistema deve utilizar contraste adequado, fontes legíveis e organização vis
 
 <img width="1280" height="745" alt="sequencial 2" src="https://github.com/user-attachments/assets/71ddde3e-25eb-4d67-8325-e53bb0f6baf6" />
 
+## Prototipação
+
+<img width="673" height="414" alt="p3" src="https://github.com/user-attachments/assets/50cadbb5-5b71-44ef-b3d6-cf5c40ac053f" />
+<img width="677" height="405" alt="p2" src="https://github.com/user-attachments/assets/41f96206-75aa-4fd8-a15f-fc06143e8cc5" />
+<img width="691" height="438" alt="p1" src="https://github.com/user-attachments/assets/ec8ec5d5-d7a2-4bc2-87d1-3573b8aeb7f0" />
+<img width="695" height="432" alt="p4" src="https://github.com/user-attachments/assets/d29d75ce-ce0a-4a7c-839e-72e1fb82a610" />
 
