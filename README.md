@@ -124,10 +124,16 @@ O sistema deve utilizar contraste adequado, fontes legíveis e organização vis
 
 ## Diagrama de casos de uso
 
----
+
 
 ## Diagrama de classes
 
 ---
 
 ## Diagramas de sequência 
+
+<img width="1280" height="716" alt="sequencial 1" src="https://github.com/user-attachments/assets/a89d37a9-f618-4fcc-aa28-60d1adc22e27" />
+
+<img width="1280" height="745" alt="sequencial 2" src="https://github.com/user-attachments/assets/71ddde3e-25eb-4d67-8325-e53bb0f6baf6" />
+
+
