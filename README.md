@@ -128,8 +128,7 @@ O sistema deve utilizar contraste adequado, fontes legíveis e organização vis
 
 
 ## Diagrama de classes
-
-<img width="868" height="677" alt="image5" src="https://github.com/user-attachments/assets/56331487-1443-476d-ba01-259b39fad36c" />
+![diagrama_classes_atualizado-barberalgo.png](diagramas/diagrama_classes_atualizado-barberalgo.png)
 
 
 ## Diagramas de sequência 
