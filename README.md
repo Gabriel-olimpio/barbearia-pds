@@ -130,6 +130,9 @@ O sistema deve utilizar contraste adequado, fontes legíveis e organização vis
 ## Diagrama de classes
 ![diagrama_classes_atualizado-barberalgo.png](diagramas/diagrama_classes_atualizado-barberalgo.png)
 
+## Diagrama de Atividades
+
+![diagrama-atividades-barbealgo.png](diagramas/diagrama-atividade-barberalgo.png)
 
 ## Diagramas de sequência 
 
