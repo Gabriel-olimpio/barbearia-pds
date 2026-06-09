@@ -234,9 +234,4 @@ Acesse:
 ```text
 http://localhost:5555
 ```
-    
-**9. Visualizar o banco de dados**
-   Para abrir o Prisma Studio, execute:
-    npx prisma studio
-   Acesse:
-    http://localhost:5555
+   
