@@ -149,40 +149,91 @@ O sistema deve utilizar contraste adequado, fontes legíveis e organização vis
 
 --
 ## Instalação e execução
-
 Siga os passos abaixo para rodar o projeto localmente.
 
-**1. Clone o repositório**
-  git clone https://github.com/Gabriel-olimpio/barbearia-pds.git
+### 1. Clone o repositório
 
-**2. Acesse a pasta do projeto**
-  cd barbearia-pds
-  
-**3. Entre na branch do projeto**
-  git checkout feature/project-setup
-  
-**4. Acesse a aplicação**
-  cd barberalgo
-  
-**5. Instale as dependências**
-  npm install
-  
-**6. Configure o arquivo .env**
-  Crie um arquivo .env na raiz da pasta barberalgo, usando o arquivo .env.example como base.
-    Exemplo:
-    DATABASE_URL="postgresql://postgres:SENHA@localhost:5432/barberalgo"
-    Substitua SENHA pela senha do seu PostgreSQL.
-    
-**7. Configure o Prisma**
-  Gere o Prisma Client:
-    npx prisma generate
-  Atualize o banco de dados: 
-    npx prisma db push
-    
-**8. Execute o projeto**
-  npm run dev
-  Acesse no navegador:
-    http://localhost:3000
+```bash
+git clone https://github.com/Gabriel-olimpio/barbearia-pds.git
+```
+
+### 2. Acesse a pasta do projeto
+
+```bash
+cd barbearia-pds
+```
+
+### 3. Entre na branch do projeto
+
+```bash
+git checkout develop
+```
+
+> Observação: utilize a branch mais atual do projeto. Atualmente ela é a `develop`.
+
+### 4. Acesse a aplicação
+
+```bash
+cd barberalgo
+```
+
+### 5. Instale as dependências
+
+```bash
+npm install
+```
+
+### 6. Configure o arquivo `.env`
+
+Crie um arquivo `.env` na raiz da pasta `barberalgo`, usando o arquivo `.env.example` como base.
+
+Exemplo:
+
+```env
+DATABASE_URL="postgresql://postgres:SENHA@localhost:5432/barberalgo"
+```
+
+Substitua `SENHA` pela senha do seu PostgreSQL.
+
+### 7. Configure o Prisma
+
+Gere o Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+Atualize o banco de dados:
+
+```bash
+npx prisma db push
+```
+
+### 8. Execute o projeto
+
+```bash
+npm run dev
+```
+
+Acesse no navegador:
+
+```text
+http://localhost:3000
+```
+
+### 9. Visualizar o banco de dados
+
+Para abrir o Prisma Studio, execute:
+
+```bash
+npx prisma studio
+```
+
+Acesse:
+
+```text
+http://localhost:5555
+```
     
 **9. Visualizar o banco de dados**
    Para abrir o Prisma Studio, execute:
