@@ -172,25 +172,23 @@ function cancelarEdicao() {
       <div>
         <label>Preço</label>
         <br />
-        <input
-          type="number"
-          value={preco}
-          onChange={(e) => setPreco(e.target.value)}
-        />
+        <div>
+  <label>Duração (minutos)</label>
+  <br />
+  <select
+    value={duracao}
+    onChange={(e) => setDuracao(e.target.value)}
+  >
+    <option value="">Selecione</option>
+    <option value="15">15 minutos</option>
+    <option value="30">30 minutos</option>
+    <option value="45">45 minutos</option>
+    <option value="60">60 minutos</option>
+  </select>
+</div>
       </div>
 
       <br />
-
-      <div>
-        <label>Duração (minutos)</label>
-        <br />
-        <input
-          type="number"
-          value={duracao}
-          onChange={(e) => setDuracao(e.target.value)}
-        />
-      </div>
-
       <br />
 
       <div>
