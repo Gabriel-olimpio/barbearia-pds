@@ -147,3 +147,45 @@ O sistema deve utilizar contraste adequado, fontes legíveis e organização vis
 <img width="691" height="438" alt="p1" src="https://github.com/user-attachments/assets/ec8ec5d5-d7a2-4bc2-87d1-3573b8aeb7f0" />
 <img width="695" height="432" alt="p4" src="https://github.com/user-attachments/assets/d29d75ce-ce0a-4a7c-839e-72e1fb82a610" />
 
+--
+## Instalação e execução
+
+Siga os passos abaixo para rodar o projeto localmente.
+
+**1. Clone o repositório**
+  git clone https://github.com/Gabriel-olimpio/barbearia-pds.git
+
+**2. Acesse a pasta do projeto**
+  cd barbearia-pds
+  
+**3. Entre na branch do projeto**
+  git checkout feature/project-setup
+  
+**4. Acesse a aplicação**
+  cd barberalgo
+  
+**5. Instale as dependências**
+  npm install
+  
+**6. Configure o arquivo .env**
+  Crie um arquivo .env na raiz da pasta barberalgo, usando o arquivo .env.example como base.
+    Exemplo:
+    DATABASE_URL="postgresql://postgres:SENHA@localhost:5432/barberalgo"
+    Substitua SENHA pela senha do seu PostgreSQL.
+    
+**7. Configure o Prisma**
+  Gere o Prisma Client:
+    npx prisma generate
+  Atualize o banco de dados: 
+    npx prisma db push
+    
+**8. Execute o projeto**
+  npm run dev
+  Acesse no navegador:
+    http://localhost:3000
+    
+**9. Visualizar o banco de dados**
+   Para abrir o Prisma Studio, execute:
+    npx prisma studio
+   Acesse:
+    http://localhost:5555
