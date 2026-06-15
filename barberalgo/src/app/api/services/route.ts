@@ -1,3 +1,5 @@
+/** @format */
+
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -59,6 +61,7 @@ async function parseServicePayload(request: NextRequest) {
   };
 }
 
+// GET para carregar serviços do banco de dados
 export async function GET() {
   try {
     const services = await prisma.service.findMany({
@@ -76,11 +79,12 @@ export async function GET() {
   } catch {
     return NextResponse.json(
       { error: "Erro ao carregar serviços." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
+// POST para cadastrar serviços no banco de dados
 export async function POST(request: NextRequest) {
   const payload = await parseServicePayload(request);
 
@@ -102,7 +106,7 @@ export async function POST(request: NextRequest) {
     if (existingService) {
       return NextResponse.json(
         { error: "Já existe um serviço com esse nome." },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -114,12 +118,12 @@ export async function POST(request: NextRequest) {
       {
         service: serviceToResponse(service),
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch {
     return NextResponse.json(
       { error: "Erro ao cadastrar serviço." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
