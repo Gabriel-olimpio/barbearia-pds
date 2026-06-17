@@ -25,6 +25,12 @@ const [barbeiros, setBarbeiros] = useState<
   {
     id: string;
     name: string;
+    phone: string;
+    availabilities: {
+      dayOfWeek: number;
+      startTimeMinutes: number;
+      endTimeMinutes: number;
+    }[];
   }[]
 >([]);
 
@@ -75,6 +81,8 @@ useEffect(() => {
       const response = await fetch("/api/barbers");
       const data = await response.json();
 
+      console.log(data.barbers);
+
       setBarbeiros(data.barbers);
     } catch (error) {
       console.error("Erro ao carregar barbeiros:", error);
@@ -85,9 +93,57 @@ useEffect(() => {
   carregarBarbeiros();
 }, []);
 
+function minutosParaHorario(minutos: number) {
+  const hora = Math.floor(minutos / 60);
+  const minuto = minutos % 60;
+
+  return `${hora
+    .toString()
+    .padStart(2, "0")}:${minuto
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+
 const servicoSelecionado = servicos.find(
   (s) => s.name === servico
 );
+
+const barbeiroSelecionado = barbeiros.find(
+  (b) => b.name === barbeiro
+);
+
+const diaSemanaSelecionado = data
+  ? new Date(`${data}T12:00:00`).getDay()
+  : null;
+
+{data && (
+  <p>
+    {new Date(`${data}T12:00:00`).toLocaleDateString(
+      "pt-BR",
+      {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }
+    )}
+  </p>
+)}
+
+const horariosDoBarbeiro =
+  barbeiroSelecionado && diaSemanaSelecionado !== null
+    ? barbeiroSelecionado.availabilities
+        .filter(
+          (availability) =>
+            availability.dayOfWeek === diaSemanaSelecionado
+        )
+        .map((availability) =>
+          minutosParaHorario(
+            availability.startTimeMinutes
+          )
+        )
+    : [];
 
 const duracaoServico =
   servicoSelecionado?.durationMinutes || 0;
@@ -191,7 +247,12 @@ const horariosDisponiveis = horariosValidos.filter(
   (hora) => !horarioConflita(hora)
 );
 
-const confirmarAgendamento = () => {
+const horariosDisponiveisReais =
+  horariosDoBarbeiro.filter(
+    (hora) => !horarioConflita(hora)
+  );
+
+const confirmarAgendamento = async () => {
   if (
     !servicoSelecionado ||
     !barbeiro ||
@@ -220,7 +281,25 @@ const confirmarAgendamento = () => {
   setBarbeiro("");
   setData("");
   setHorario("");
+const response = await fetch(
+  "/api/appointments",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      servico,
+      barbeiro,
+      data,
+      horario,
+    }),
+  }
+);
 
+const resultado = await response.json();
+
+console.log(resultado);
   alert("Agendamento realizado!");
 };
 
@@ -309,6 +388,7 @@ const abrirConfirmacao = () => {
 <br />
 <br />
 
+
 {servico && barbeiro && data && (
   <>
     <label>Horários disponíveis:</label>
@@ -316,7 +396,7 @@ const abrirConfirmacao = () => {
     <br />
     <br />
 
-{horariosDisponiveis.map((hora) => (
+{horariosDisponiveisReais.map((hora) => (
   <button
     key={hora}
     onClick={() => setHorario(hora)}
