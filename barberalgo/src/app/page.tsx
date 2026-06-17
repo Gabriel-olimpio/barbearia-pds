@@ -1,65 +1,79 @@
-import Image from "next/image";
+/** @format */
 
-export default function Home() {
+"use client";
+
+import { useRef, useState } from "react";
+
+export default function HomeEmConstrucao() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Controla o estado do som (tocando ou pausado)
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const alternarSom = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      // Se já estiver tocando, pausa o áudio
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      // Se estiver pausado, toca o áudio
+      audioRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((error) => {
+          console.log("O navegador bloqueou o áudio inicial:", error);
+        });
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="relative flex h-screen w-screen select-none items-center justify-center overflow-hidden bg-gray-900 text-white">
+      {/* Arquivo de áudio na pasta public/ */}
+      <audio ref={audioRef} src="/som-construcao.mp3" loop />
+
+      {/* Container Principal */}
+      <div className="z-10 max-w-md px-4 text-center">
+        {/* Ícone Animado (pula apenas se o som estiver tocando) */}
+        <div
+          className={`mb-6 text-6xl transition-transform ${isPlaying ? "animate-bounce" : ""}`}>
+          🚧
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* Título */}
+        <h1 className="mb-4 text-4xl font-black tracking-tight  text-[#b9ff62] uppercase md:text-5xl">
+          Em Construção
+        </h1>
+
+        {/* Texto descritivo */}
+        <p className="mb-8 text-base text-gray-400">
+          Estamos construindo algo incrível.
+        </p>
+
+        {/* Botão de Alternância (Play/Pause) */}
+        <button
+          onClick={alternarSom}
+          className={`w-full rounded-full py-3 px-6 text-sm font-bold uppercase tracking-wider shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95
+            ${
+              isPlaying
+                ? "bg-red-600 text-white hover:bg-red-700 hover:shadow-red-500/20"
+                : "bg-[#b9ff62] text-gray-900 hover:bg-green-400 hover:shadow-yellow-500/20"
+            }`}>
+          {isPlaying ? "Sair da Obra 😔🚶" : "Entrar na Obra 🔨"}
+        </button>
+      </div>
+
+      {/* Faixa decorativa no rodapé */}
+      <div
+        className="absolute bottom-0 left-0 h-4 w-full bg-[#b9ff62]"
+        style={{
+          backgroundImage:
+            "linear-gradient(45deg, #000 25%, transparent 25%, transparent 50%, #000 50%, #000 75%, transparent 75%, transparent)",
+          backgroundSize: "40px 40px",
+        }}
+      />
     </div>
   );
 }
