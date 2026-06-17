@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { ptBR } from "date-fns/locale";
 
 export default function AgendamentosPage() {
   const [servico, setServico] = useState("");
@@ -156,6 +159,10 @@ const dataAgendamento =
     );
   }
 );
+
+const [dataSelecionada, setDataSelecionada] =
+  useState<Date | null>(null);
+
 
 const horariosOcupados = agendamentosDoDia.flatMap(
   (agendamento) => {
@@ -321,159 +328,195 @@ const abrirConfirmacao = () => {
 };
 
   return (
-    <div>
-      <h1>Agendamento de Serviços</h1>
+  <main className="min-h-screen bg-[#121214] py-12 px-6 font-sans">
+    <div className="max-w-5xl mx-auto">
 
-      <br />
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-white mb-3">
+          Agendamento de Serviços
+        </h1>
 
-      <label>Serviço:</label>
+        <p className="text-zinc-400">
+          Etapa 2 de 5
+        </p>
+      </div>
 
-      <br />
+      <div className="bg-[#1a1a1e] border border-zinc-800 rounded-xl p-6">
 
-<select
-  value={servico}
-  onChange={(e) => setServico(e.target.value)}
->
-  <option value="">Selecione um serviço</option>
+        <label className="block text-white font-medium mb-2">
+          Serviço
+        </label>
 
-{servicos.map((servico) => (
-  <option
-  key={servico.id}
-  value={servico.name}
->
-  {servico.name}
-</option>
-))}
+        <select
+          value={servico}
+          onChange={(e) => setServico(e.target.value)}
+          className="w-full bg-[#121214] border border-zinc-700 rounded-lg px-4 py-3 text-white mb-6"
+        >
+          <option value="">Selecione um serviço</option>
 
-</select>
+          {servicos.map((servico) => (
+            <option
+              key={servico.id}
+              value={servico.name}
+            >
+              {servico.name}
+            </option>
+          ))}
+        </select>
 
-      <br />
-      <br />
+        <label className="block text-white font-medium mb-2">
+          Barbeiro
+        </label>
 
-<br />
-<br />
+        <select
+          value={barbeiro}
+          onChange={(e) => setBarbeiro(e.target.value)}
+          className="w-full bg-[#121214] border border-zinc-700 rounded-lg px-4 py-3 text-white mb-6"
+        >
+          <option value="">Selecione um barbeiro</option>
 
-<label>Barbeiro:</label>
+          {barbeiros.map((barbeiro) => (
+            <option
+              key={barbeiro.id}
+              value={barbeiro.name}
+            >
+              {barbeiro.name}
+            </option>
+          ))}
+        </select>
 
-<br />
+        <label className="block text-white font-medium mb-2">
+          Data
+        </label>
 
-<select
-  value={barbeiro}
-  onChange={(e) => setBarbeiro(e.target.value)}
->
-  <option value="">Selecione um barbeiro</option>
+<DatePicker
+  selected={dataSelecionada}
+  onChange={(date: Date | null) => {
+    setDataSelecionada(date);
 
-{barbeiros.map((barbeiro) => (
-  <option
-    key={barbeiro.id}
-    value={barbeiro.name}
-  >
-    {barbeiro.name}
-  </option>
-))}
-
-</select>
-
-<br />
-<br />
-
-<label>Data:</label>
-
-<br />
-
-<input
-  type="date"
-  value={data}
-  min={new Date().toISOString().split("T")[0]}
-  onChange={(e) => setData(e.target.value)}
+    if (date) {
+      setData(
+        date.toISOString().split("T")[0]
+      );
+    }
+  }}
+  minDate={new Date()}
+  dateFormat="dd/MM/yyyy"
+  placeholderText="Selecione uma data"
+   locale={ptBR}
+  className="
+    w-full
+    bg-[#121214]
+    border border-zinc-700
+    rounded-lg
+    px-4 py-3
+    text-white
+  "
 />
 
-{data && (
-  <p>
-    {dataFormatada}
-  </p>
-)}
+        {data && (
+          <p className="mt-3 text-[#bdff31] text-sm">
+            {dataFormatada}
+          </p>
+        )}
 
-<br />
-<br />
+        {servico && barbeiro && data && (
+          <>
+            <div className="mt-8">
+              <label className="block text-white font-medium mb-4">
+                Horários disponíveis
+              </label>
 
+              <div className="flex flex-wrap gap-2">
+                {horariosDisponiveisReais.map((hora) => (
+                  <button
+                    key={hora}
+                    onClick={() => setHorario(hora)}
+                    className={`
+                      px-4 py-2 rounded-lg border transition-all
 
-{servico && barbeiro && data && (
-  <>
-    <label>Horários disponíveis:</label>
+                      ${
+                        horario === hora
+                          ? "bg-[#bdff31] text-black border-[#bdff31]"
+                          : "bg-[#121214] text-white border-zinc-700 hover:border-[#bdff31]"
+                      }
+                    `}
+                  >
+                    {hora}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
-    <br />
-    <br />
+        {mostrarConfirmacao && (
+          <div className="mt-8 bg-[#121214] border border-zinc-800 rounded-xl p-6">
+            <h2 className="text-xl font-bold text-white mb-4">
+              Confirmar Agendamento
+            </h2>
 
-{horariosDisponiveisReais.map((hora) => (
-  <button
-    key={hora}
-    onClick={() => setHorario(hora)}
-    style={{
-      marginRight: "10px",
-      marginBottom: "10px",
-      padding: "8px",
-      cursor: "pointer",
-      border:
-        horario === hora
-          ? "2px solid green"
-          : "1px solid gray",
-    }}
-  >
-    {hora}
-  </button>
-))}
-  </>
-)}
-      <br />
-      <br />
-{mostrarConfirmacao && (
-  <div
-    style={{
-      border: "1px solid black",
-      padding: "20px",
-      marginTop: "20px",
-    }}
-  >
-    <h2>Confirmar Agendamento</h2>
+            <div className="space-y-2 text-zinc-300">
+              <p>
+                <span className="text-white font-semibold">
+                  Serviço:
+                </span>{" "}
+                {servico}
+              </p>
 
-    <p>Serviço: {servico}</p>
+              <p>
+                <span className="text-white font-semibold">
+                  Barbeiro:
+                </span>{" "}
+                {barbeiro}
+              </p>
 
-    <p>Barbeiro: {barbeiro}</p>
+              <p>
+                <span className="text-white font-semibold">
+                  Data:
+                </span>{" "}
+                {dataFormatada}
+              </p>
 
-<p>
-  Data: {dataFormatada}
-</p>
+              <p>
+                <span className="text-white font-semibold">
+                  Horário:
+                </span>{" "}
+                {horario}
+              </p>
+            </div>
 
-    <p>Horário: {horario}</p>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={confirmarAgendamento}
+                className="px-6 py-2 rounded-lg bg-[#bdff31] text-black font-bold hover:bg-[#a5e028]"
+              >
+                Confirmar
+              </button>
 
-    <button
-      onClick={confirmarAgendamento}
-    >
-      Confirmar
-    </button>
+              <button
+                onClick={() =>
+                  setMostrarConfirmacao(false)
+                }
+                className="px-6 py-2 rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
 
-    <button
-      onClick={() =>
-        setMostrarConfirmacao(false)
-      }
-      style={{
-        marginLeft: "10px",
-      }}
-    >
-      Cancelar
-    </button>
-  </div>
-)}
-      <br />
+        {!mostrarConfirmacao && (
+          <button
+            onClick={abrirConfirmacao}
+            className="mt-8 px-6 py-3 rounded-lg bg-[#bdff31] text-black font-bold hover:bg-[#a5e028]"
+          >
+            Confirmar Agendamento
+          </button>
+        )}
 
-{!mostrarConfirmacao && (
-  <button
-    onClick={abrirConfirmacao}
-  >
-    Confirmar Agendamento
-  </button>
-)}
-   </div>
-  );
+      </div>
+    </div>
+  </main>
+);
 }
