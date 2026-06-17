@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AgendamentosPage() {
   const [servico, setServico] = useState("");
@@ -21,29 +21,20 @@ for (let hora = 9; hora < 20; hora++) {
   }
 }
 
-const barbeiros = [
-  "João",
-  "Carlos",
-  "Pedro",
-];
+const [barbeiros, setBarbeiros] = useState<
+  {
+    id: string;
+    name: string;
+  }[]
+>([]);
 
-const servicos = [
+const [servicos, setServicos] = useState<
   {
-    id: 1,
-    nome: "Barba",
-    duracao: 15,
-  },
-  {
-    id: 2,
-    nome: "Corte",
-    duracao: 30,
-  },
-  {
-    id: 3,
-    nome: "Corte + Barba",
-    duracao: 45,
-  },
-];
+    id: string;
+    name: string;
+    durationMinutes: number;
+  }[]
+>([]);
 
 const [agendamentos, setAgendamentos] =
   useState([
@@ -67,12 +58,39 @@ const [agendamentos, setAgendamentos] =
 },
 ]);
 
+useEffect(() => {
+  async function carregarServicos() {
+    try {
+      const response = await fetch("/api/services");
+      const data = await response.json();
+
+      setServicos(data.services);
+    } catch (error) {
+      console.error("Erro ao carregar serviços:", error);
+    }
+  }
+
+  async function carregarBarbeiros() {
+    try {
+      const response = await fetch("/api/barbers");
+      const data = await response.json();
+
+      setBarbeiros(data.barbers);
+    } catch (error) {
+      console.error("Erro ao carregar barbeiros:", error);
+    }
+  }
+
+  carregarServicos();
+  carregarBarbeiros();
+}, []);
+
 const servicoSelecionado = servicos.find(
-  (s) => s.nome === servico
+  (s) => s.name === servico
 );
 
 const duracaoServico =
-  servicoSelecionado?.duracao || 0;
+  servicoSelecionado?.durationMinutes || 0;
 
 const agendamentosDoDia = agendamentos.filter(
   (agendamento) =>
@@ -188,7 +206,7 @@ const confirmarAgendamento = () => {
     barbeiro,
     data,
     horario,
-    duracao: servicoSelecionado.duracao,
+   duracao: servicoSelecionado.durationMinutes,
   };
 
   setAgendamentos([
@@ -239,9 +257,9 @@ const abrirConfirmacao = () => {
 {servicos.map((servico) => (
   <option
   key={servico.id}
-  value={servico.nome}
+  value={servico.name}
 >
-  {servico.nome}
+  {servico.name}
 </option>
 ))}
 
@@ -263,11 +281,14 @@ const abrirConfirmacao = () => {
 >
   <option value="">Selecione um barbeiro</option>
 
-  {barbeiros.map((nome) => (
-    <option key={nome} value={nome}>
-      {nome}
-    </option>
-  ))}
+{barbeiros.map((barbeiro) => (
+  <option
+    key={barbeiro.id}
+    value={barbeiro.name}
+  >
+    {barbeiro.name}
+  </option>
+))}
 
 </select>
 
