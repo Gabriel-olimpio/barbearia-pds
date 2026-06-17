@@ -42,27 +42,7 @@ const [servicos, setServicos] = useState<
   }[]
 >([]);
 
-const [agendamentos, setAgendamentos] =
-  useState([
-  {
-    barbeiro: "Carlos",
-    data: "2026-06-08",
-    horario: "09:00",
-    duracao: 45,
-  },
-  {
-    barbeiro: "Carlos",
-    data: "2026-06-08",
-    horario: "14:00",
-    duracao: 30,
-  },
-  {
-  barbeiro: "Carlos",
-  data: "2026-06-08",
-  horario: "10:00",
-  duracao: 45,
-},
-]);
+const [agendamentos, setAgendamentos] = useState<any[]>([]);
 
 useEffect(() => {
   async function carregarServicos() {
@@ -81,17 +61,34 @@ useEffect(() => {
       const response = await fetch("/api/barbers");
       const data = await response.json();
 
-      console.log(data.barbers);
-
+      
       setBarbeiros(data.barbers);
     } catch (error) {
       console.error("Erro ao carregar barbeiros:", error);
     }
   }
 
-  carregarServicos();
-  carregarBarbeiros();
+  async function carregarAgendamentos() {
+  try {
+    const response = await fetch("/api/appointments");
+    const data = await response.json();
+
+    setAgendamentos(data.appointments);
+  } catch (error) {
+    console.error(
+      "Erro ao carregar agendamentos:",
+      error
+    );
+  }
+}
+carregarServicos();
+carregarBarbeiros();
+carregarAgendamentos();
 }, []);
+
+useEffect(() => {
+  setHorario("");
+}, [barbeiro, data, servico]);
 
 function minutosParaHorario(minutos: number) {
   const hora = Math.floor(minutos / 60);
@@ -117,9 +114,8 @@ const diaSemanaSelecionado = data
   ? new Date(`${data}T12:00:00`).getDay()
   : null;
 
-{data && (
-  <p>
-    {new Date(`${data}T12:00:00`).toLocaleDateString(
+const dataFormatada = data
+  ? new Date(`${data}T12:00:00`).toLocaleDateString(
       "pt-BR",
       {
         weekday: "long",
@@ -127,9 +123,8 @@ const diaSemanaSelecionado = data
         month: "long",
         year: "numeric",
       }
-    )}
-  </p>
-)}
+    )
+  : "";
 
 const horariosDoBarbeiro =
   barbeiroSelecionado && diaSemanaSelecionado !== null
@@ -149,21 +144,39 @@ const duracaoServico =
   servicoSelecionado?.durationMinutes || 0;
 
 const agendamentosDoDia = agendamentos.filter(
-  (agendamento) =>
-    agendamento.barbeiro === barbeiro &&
-    agendamento.data === data
+  (agendamento) => {
+const dataAgendamento =
+  agendamento.startsAt.split("T")[0];
+
+       
+    return (
+      agendamento.barber.user.name === barbeiro &&
+      dataAgendamento === data &&
+      agendamento.status === "SCHEDULED"
+    );
+  }
 );
 
 const horariosOcupados = agendamentosDoDia.flatMap(
   (agendamento) => {
-    const [h, m] = agendamento.horario
-      .split(":")
-      .map(Number);   
+    const inicio = new Date(
+      agendamento.startsAt
+    );
 
-    const inicioEmMinutos = h * 60 + m;
+    const fim = new Date(
+      agendamento.endsAt
+    );
+
+    const inicioEmMinutos =
+      inicio.getHours() * 60 +
+      inicio.getMinutes();
+
+    const fimEmMinutos =
+      fim.getHours() * 60 +
+      fim.getMinutes();
 
     const quantidadeBlocos =
-      agendamento.duracao / 15;
+      (fimEmMinutos - inicioEmMinutos) / 15;
 
     return Array.from(
       { length: quantidadeBlocos },
@@ -187,6 +200,7 @@ const horariosOcupados = agendamentosDoDia.flatMap(
     );
   }
 );
+
 
 const horarioConflita = (
   horarioInicio: string
@@ -232,21 +246,6 @@ const horarioConflita = (
 };
 
 
-const horariosValidos = horarios.filter((hora) => {
-  const [h, m] = hora.split(":").map(Number);
-
-  const inicioEmMinutos = h * 60 + m;
-
-  const fimEmMinutos =
-    inicioEmMinutos + duracaoServico;
-
-  return fimEmMinutos <= 20 * 60;
-});
-
-const horariosDisponiveis = horariosValidos.filter(
-  (hora) => !horarioConflita(hora)
-);
-
 const horariosDisponiveisReais =
   horariosDoBarbeiro.filter(
     (hora) => !horarioConflita(hora)
@@ -263,25 +262,8 @@ const confirmarAgendamento = async () => {
     return;
   }
 
-  const novoAgendamento = {
-    barbeiro,
-    data,
-    horario,
-   duracao: servicoSelecionado.durationMinutes,
-  };
-
-  setAgendamentos([
-    ...agendamentos,
-    novoAgendamento,
-  ]);
-
-  setMostrarConfirmacao(false);
-
-  setServico("");
-  setBarbeiro("");
-  setData("");
-  setHorario("");
 const response = await fetch(
+
   "/api/appointments",
   {
     method: "POST",
@@ -299,7 +281,28 @@ const response = await fetch(
 
 const resultado = await response.json();
 
-console.log(resultado);
+if (!response.ok) {
+  alert(resultado.error);
+  return;
+}
+
+  setMostrarConfirmacao(false);
+
+  setServico("");
+  setBarbeiro("");
+  setData("");
+  setHorario("");
+
+const responseAgendamentos =
+  await fetch("/api/appointments");
+
+const dataAgendamentos =
+  await responseAgendamentos.json();
+
+setAgendamentos(
+  dataAgendamentos.appointments
+);
+
   alert("Agendamento realizado!");
 };
 
@@ -385,6 +388,12 @@ const abrirConfirmacao = () => {
   onChange={(e) => setData(e.target.value)}
 />
 
+{data && (
+  <p>
+    {dataFormatada}
+  </p>
+)}
+
 <br />
 <br />
 
@@ -432,8 +441,8 @@ const abrirConfirmacao = () => {
 
     <p>Barbeiro: {barbeiro}</p>
 
-    <p>
-  Data: {new Date(data).toLocaleDateString("pt-BR")}
+<p>
+  Data: {dataFormatada}
 </p>
 
     <p>Horário: {horario}</p>
