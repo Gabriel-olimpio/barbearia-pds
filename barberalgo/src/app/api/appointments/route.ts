@@ -8,7 +8,12 @@ export async function GET() {
         service: true,
         barber: {
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },

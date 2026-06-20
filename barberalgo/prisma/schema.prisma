@@ -24,15 +24,52 @@ model User {
   id                   String        @id @default(cuid())
   name                 String
   email                String        @unique
+  phone                String?
   passwordHash         String
+  sessionVersion       Int           @default(0)
   role                 UserRole      @default(CLIENT)
   barberProfile        BarberProfile?
   appointments         Appointment[] @relation("ClientAppointments")
   canceledAppointments Appointment[] @relation("CanceledAppointments")
+  createdInvites       RegistrationInvite[] @relation("InviteCreator")
+  acceptedInvite       RegistrationInvite?  @relation("InviteUser")
+  passwordResetTokens  PasswordResetToken[]
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 
   @@map("users")
+}
+
+model RegistrationInvite {
+  id          String    @id @default(cuid())
+  codeHash    String    @unique
+  codeHint    String
+  role        UserRole
+  expiresAt   DateTime
+  usedAt      DateTime?
+  revokedAt   DateTime?
+  createdById String
+  createdBy   User      @relation("InviteCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  usedById    String?   @unique
+  usedBy      User?     @relation("InviteUser", fields: [usedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+
+  @@index([role, expiresAt])
+  @@index([createdById])
+  @@map("registration_invites")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+  @@map("password_reset_tokens")
 }
 
 model BarberProfile {
@@ -41,6 +78,7 @@ model BarberProfile {
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   bio            String?
   phone          String?
+  specialty      String?
   active         Boolean        @default(true)
   availabilities Availability[]
   appointments   Appointment[]

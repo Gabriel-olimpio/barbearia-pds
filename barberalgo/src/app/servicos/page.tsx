@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { type SyntheticEvent, useEffect, useState } from "react";
 
 type Servico = {
@@ -195,16 +196,21 @@ export default function Servicos() {
   return (
     <main className="min-h-screen bg-[#222220] px-4 py-5 text-white sm:px-6">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-        <section>
-          <span className="text-xs font-black uppercase tracking-wide text-[#b9ff62]">
-            Área administrativa
-          </span>
-          <h1 className="mt-2 text-2xl font-black uppercase">
-            Serviços da barbearia
-          </h1>
-          <p className="mt-1 text-sm text-white/60">
-            Cadastre, edite e remova os serviços que aparecem para os clientes.
-          </p>
+        <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <span className="text-xs font-black uppercase tracking-wide text-[#b9ff62]">
+              Área administrativa
+            </span>
+            <h1 className="mt-2 text-2xl font-black uppercase">
+              Serviços da barbearia
+            </h1>
+            <p className="mt-1 text-sm text-white/60">
+              Cadastre, edite e remova os serviços que aparecem para os clientes.
+            </p>
+          </div>
+          <Link href="/convites" className="w-fit rounded-md border border-[#b9ff62]/30 px-4 py-2.5 text-xs font-black uppercase text-[#b9ff62] hover:bg-[#b9ff62]/5">
+            Gerenciar convites
+          </Link>
         </section>
 
         {erro && (
