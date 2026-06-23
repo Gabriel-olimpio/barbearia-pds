@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Appointment = {
   id: string;
@@ -24,11 +24,8 @@ export default function MeusAgendamentosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function loadAppointments() {
+  const loadAppointments = useCallback(async () => {
     try {
-      setLoading(true);
-      setError("");
-
       const response = await fetch("/api/appointments/me", {
         credentials: "include",
       });
@@ -40,6 +37,7 @@ export default function MeusAgendamentosPage() {
         return;
       }
 
+      setError("");
       setAppointments(data.appointments || []);
     } catch (error) {
       console.error(error);
@@ -47,7 +45,7 @@ export default function MeusAgendamentosPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   async function cancelAppointment(appointmentId: string) {
     const confirmCancel = confirm(
@@ -62,7 +60,17 @@ export default function MeusAgendamentosPage() {
         credentials: "include",
       });
 
-      const data = await response.json();
+      const text = await response.text();
+
+      let data: { error?: string; message?: string };
+
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error("Resposta da API não veio em JSON:", text);
+        alert("Erro inesperado ao cancelar. Veja o console ou terminal.");
+        return;
+      }
 
       if (!response.ok) {
         alert(data.error || "Erro ao cancelar agendamento.");
@@ -70,7 +78,7 @@ export default function MeusAgendamentosPage() {
       }
 
       alert("Agendamento cancelado com sucesso.");
-      loadAppointments();
+      await loadAppointments();
     } catch (error) {
       console.error(error);
       alert("Erro ao cancelar agendamento.");
@@ -78,8 +86,14 @@ export default function MeusAgendamentosPage() {
   }
 
   useEffect(() => {
-    loadAppointments();
-  }, []);
+    const timer = window.setTimeout(() => {
+      void loadAppointments();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [loadAppointments]);
 
   function formatDate(date: string) {
     return new Date(date).toLocaleDateString("pt-BR");
