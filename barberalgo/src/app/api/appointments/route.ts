@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUser } from "@/lib/auth-session";
 
 export async function GET() {
   try {
@@ -35,11 +36,34 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthenticatedUser(request);
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Usuário não autenticado." },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "CLIENT") {
+      return NextResponse.json(
+        { error: "Apenas clientes podem fazer agendamentos." },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
 
     const { servico, barbeiro, data, horario } = body;
+
+    if (!servico || !barbeiro || !data || !horario) {
+      return NextResponse.json(
+        { error: "Preencha todos os campos." },
+        { status: 400 }
+      );
+    }
 
     const service = await prisma.service.findFirst({
       where: {
@@ -55,9 +79,9 @@ export async function POST(request: Request) {
       },
     });
 
-    const client = await prisma.user.findFirst({
+    const client = await prisma.user.findUnique({
       where: {
-        role: "CLIENT",
+        id: user.id,
       },
     });
 
@@ -68,26 +92,22 @@ export async function POST(request: Request) {
       );
     }
 
-    const startsAt = new Date(
-      `${data}T${horario}:00`
-    );
+    const startsAt = new Date(`${data}T${horario}:00`);
 
     const endsAt = new Date(
-      startsAt.getTime() +
-        service.durationMinutes * 60000
+      startsAt.getTime() + service.durationMinutes * 60000
     );
 
-    const appointment =
-      await prisma.appointment.create({
-        data: {
-          clientId: client.id,
-          barberId: barber.id,
-          serviceId: service.id,
-          startsAt,
-          endsAt,
-          status: "SCHEDULED",
-        },
-      });
+    const appointment = await prisma.appointment.create({
+      data: {
+        clientId: client.id,
+        barberId: barber.id,
+        serviceId: service.id,
+        startsAt,
+        endsAt,
+        status: "SCHEDULED",
+      },
+    });
 
     return NextResponse.json({
       appointment,
