@@ -7,6 +7,18 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ptBR } from "date-fns/locale";
 
+type Agendamento = {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  status: "SCHEDULED" | "CANCELED" | "COMPLETED" | "NO_SHOW";
+  barber: {
+    user: {
+      name: string;
+    };
+  };
+};
+
 export default function AgendamentosPage() {
   const [servico, setServico] = useState("");
   const [data, setData] = useState("");
@@ -46,7 +58,7 @@ export default function AgendamentosPage() {
     }[]
   >([]);
 
-  const [agendamentos, setAgendamentos] = useState<any[]>([]);
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
 
   useEffect(() => {
     async function carregarServicos() {
@@ -74,9 +86,9 @@ export default function AgendamentosPage() {
     async function carregarAgendamentos() {
       try {
         const response = await fetch("/api/appointments");
-        const data = await response.json();
+        const data: { appointments: Agendamento[] } = await response.json();
 
-        setAgendamentos(data.appointments);
+        setAgendamentos(data.appointments ?? []);
       } catch (error) {
         console.error("Erro ao carregar agendamentos:", error);
       }
@@ -85,10 +97,6 @@ export default function AgendamentosPage() {
     carregarBarbeiros();
     carregarAgendamentos();
   }, []);
-
-  useEffect(() => {
-    setHorario("");
-  }, [barbeiro, data, servico]);
 
   function minutosParaHorario(minutos: number) {
     const hora = Math.floor(minutos / 60);
@@ -231,9 +239,10 @@ export default function AgendamentosPage() {
 
     const responseAgendamentos = await fetch("/api/appointments");
 
-    const dataAgendamentos = await responseAgendamentos.json();
+    const dataAgendamentos: { appointments: Agendamento[] } =
+      await responseAgendamentos.json();
 
-    setAgendamentos(dataAgendamentos.appointments);
+    setAgendamentos(dataAgendamentos.appointments ?? []);
 
     alert("Agendamento realizado!");
   };
@@ -263,7 +272,11 @@ export default function AgendamentosPage() {
 
           <select
             value={servico}
-            onChange={(e) => setServico(e.target.value)}
+            onChange={(e) => {
+              setServico(e.target.value);
+              setHorario("");
+              setMostrarConfirmacao(false);
+            }}
             className="w-full bg-[#121214] border border-zinc-700 rounded-lg px-4 py-3 text-white mb-6">
             <option value="">Selecione um serviço</option>
 
@@ -278,7 +291,11 @@ export default function AgendamentosPage() {
 
           <select
             value={barbeiro}
-            onChange={(e) => setBarbeiro(e.target.value)}
+            onChange={(e) => {
+              setBarbeiro(e.target.value);
+              setHorario("");
+              setMostrarConfirmacao(false);
+            }}
             className="w-full bg-[#121214] border border-zinc-700 rounded-lg px-4 py-3 text-white mb-6">
             <option value="">Selecione um barbeiro</option>
 
@@ -295,9 +312,13 @@ export default function AgendamentosPage() {
             selected={dataSelecionada}
             onChange={(date: Date | null) => {
               setDataSelecionada(date);
+              setHorario("");
+              setMostrarConfirmacao(false);
 
               if (date) {
                 setData(date.toISOString().split("T")[0]);
+              } else {
+                setData("");
               }
             }}
             minDate={new Date()}
