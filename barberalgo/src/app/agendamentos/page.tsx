@@ -206,6 +206,7 @@ export default function AgendamentosPage() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         servico,
         barbeiro,
