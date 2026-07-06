@@ -14,7 +14,7 @@ export default function StatCard({
   color,
 }: StatCardProps) {
   return (
-    <div className="rounded-xl bg-white shadow-md border border-gray-200 p-5 transition-all hover:shadow-lg hover:-translate-y-1">
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-500">{title}</p>

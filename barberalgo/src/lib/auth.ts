@@ -128,6 +128,6 @@ export const sessionCookieOptions = {
 };
 
 export function getRouteForRole(role: UserRole) {
-  if (role === "ADMIN") return "/servicos";
+  if (role === "ADMIN") return "/dashboard";
   return "/agendamentos";
 }
