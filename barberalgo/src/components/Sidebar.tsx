@@ -1,3 +1,5 @@
+/** @format */
+
 "use client";
 
 import Link from "next/link";
@@ -17,12 +19,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-type UserRole =
-  | "ADMIN"
-  | "CLIENT"
-  | "BARBER"
-  | "PROFESSIONAL"
-  | "PROFISSIONAL";
+type UserRole = "ADMIN" | "CLIENT" | "BARBER" | "PROFESSIONAL" | "PROFISSIONAL";
 
 type SessionUser = {
   id: string;
@@ -233,16 +230,14 @@ export default function Sidebar() {
     <aside
       className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-zinc-800 bg-[#111311] px-4 py-6 transition-all duration-300 ${
         collapsed ? "w-20" : "w-64"
-      }`}
-    >
+      }`}>
       <div
         className={`mb-8 flex items-center ${
           collapsed ? "justify-center" : "justify-between"
-        }`}
-      >
+        }`}>
         {!collapsed && (
-          <h1 className="text-2xl font-black text-white">
-            Barber<span className="text-[#b4ff39]">Algo</span>
+          <h1 className="text-lg font-black uppercase tracking-[-0.04em]">
+            Barber<span className="text-[#b9ff62]">Algo</span>
           </h1>
         )}
 
@@ -258,8 +253,7 @@ export default function Sidebar() {
             onClick={toggleCollapsed}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
             title="Recolher menu"
-            aria-label="Recolher menu"
-          >
+            aria-label="Recolher menu">
             <ChevronLeft size={18} />
           </button>
         )}
@@ -271,8 +265,7 @@ export default function Sidebar() {
           onClick={toggleCollapsed}
           className="mb-6 flex h-9 w-full items-center justify-center rounded-lg border border-zinc-800 text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
           title="Expandir menu"
-          aria-label="Expandir menu"
-        >
+          aria-label="Expandir menu">
           <ChevronRight size={18} />
         </button>
       )}
@@ -318,8 +311,7 @@ export default function Sidebar() {
                   active
                     ? "bg-[#b4ff39] text-black"
                     : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
-                }`}
-              >
+                }`}>
                 <Icon size={18} />
 
                 {!collapsed && <span>{item.label}</span>}
@@ -336,8 +328,7 @@ export default function Sidebar() {
         aria-label="Sair"
         className={`mt-8 flex items-center rounded-lg border border-red-500/60 bg-red-950/40 px-4 py-3 text-sm font-bold text-red-200 transition hover:bg-red-900/60 ${
           collapsed ? "justify-center" : "gap-3"
-        }`}
-      >
+        }`}>
         <LogOut size={18} />
 
         {!collapsed && <span>Sair</span>}
