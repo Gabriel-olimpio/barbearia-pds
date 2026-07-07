@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import InviteManager from "@/components/admin/invite-manager";
-import { requireAdmin } from "@/lib/dashboard-auth";
+import { SESSION_COOKIE_NAME } from "@/lib/auth";
+import { getAuthenticatedUserFromToken } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
@@ -8,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ConvitesPage() {
-  await requireAdmin();
+  const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
+  const user = await getAuthenticatedUserFromToken(token);
+
+  if (user?.role !== "ADMIN") redirect("/login");
 
   const invites = await prisma.registrationInvite.findMany({
     select: {
