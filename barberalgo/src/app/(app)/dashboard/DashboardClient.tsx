@@ -2,6 +2,7 @@
 
 "use client";
 
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -53,14 +54,15 @@ type DashboardData = {
 type StatCardProps = {
   title: string;
   value: string | number;
+  description: string;
   icon: LucideIcon;
-  iconClassName: string;
-  sparkClassName: string;
+  tone: string;
 };
 
 type RankingCardProps = {
   title: string;
-  icon: React.ReactNode;
+  description: string;
+  icon: ReactNode;
   items: RankingItem[];
 };
 
@@ -72,7 +74,8 @@ type BarItem = {
 
 type BarChartCardProps = {
   title: string;
-  icon: React.ReactNode;
+  description: string;
+  icon: ReactNode;
   items: BarItem[];
   barClassName: string;
 };
@@ -84,123 +87,153 @@ function formatCurrency(value: number) {
   });
 }
 
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  iconClassName,
-  sparkClassName,
-}: StatCardProps) {
+function LoadingState() {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-linear-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-zinc-400">{title}</p>
-
-          <strong className="mt-3 block text-3xl font-black text-white">
-            {value}
-          </strong>
-        </div>
-
-        <div
-          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${iconClassName}`}>
-          <Icon size={28} className="text-white" />
+    <section className="min-h-screen bg-[#09090b] px-6 py-8 text-white">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6">
+          <p className="text-sm font-medium text-zinc-400">
+            Carregando dashboard...
+          </p>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {Array.from({ length: 8 }, (_, index) => (
+              <div key={index} className="h-32 rounded-xl bg-zinc-900" />
+            ))}
+          </div>
         </div>
       </div>
+    </section>
+  );
+}
 
-      <div className="mt-5 h-6 w-full">
-        <svg viewBox="0 0 180 28" className="h-full w-full opacity-80">
-          <path
-            d="M2 18 C10 18, 12 20, 18 18 S28 14, 34 16 S43 23, 50 17 S59 11, 66 16 S73 23, 80 17 S89 13, 96 16 S104 22, 112 17 S121 11, 128 16 S136 21, 144 17 S153 13, 160 17 S170 22, 178 18"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            className={sparkClassName}
-          />
-        </svg>
+function EmptyData({ label = "Nenhum dado encontrado." }: { label?: string }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-zinc-700 bg-zinc-950/60 p-6 text-center text-sm text-zinc-400">
+      {label}
+    </div>
+  );
+}
+
+function CardHeader({
+  title,
+  description,
+  icon,
+}: {
+  title: string;
+  description: string;
+  icon: ReactNode;
+}) {
+  return (
+    <div className="mb-6 flex items-start gap-3">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-lime-400/20 bg-lime-400/10 text-lime-300">
+        {icon}
+      </div>
+      <div>
+        <h2 className="text-lg font-semibold text-zinc-50">{title}</h2>
+        <p className="mt-1 text-sm text-zinc-400">{description}</p>
       </div>
     </div>
   );
 }
 
-function RankingCard({ title, icon, items }: RankingCardProps) {
+function StatCard({ title, value, description, icon: Icon, tone }: StatCardProps) {
+  return (
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-zinc-400">{title}</p>
+          <strong className="mt-3 block text-3xl font-bold tracking-tight text-zinc-50">
+            {value}
+          </strong>
+        </div>
+
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${tone}`}>
+          <Icon size={21} />
+        </div>
+      </div>
+      <p className="mt-4 text-sm text-zinc-500">{description}</p>
+    </div>
+  );
+}
+
+function RankingCard({ title, description, icon, items }: RankingCardProps) {
   const maxValue = Math.max(...items.map((item) => item.appointments), 1);
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-linear-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
-      <div className="mb-6 flex items-center gap-3">
-        {icon}
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 shadow-sm">
+      <CardHeader title={title} description={description} icon={icon} />
 
-        <h2 className="text-2xl font-black text-white">{title}</h2>
-      </div>
-
-      <div className="space-y-5">
-        {items.length === 0 ? (
-          <p className="text-zinc-400">Nenhum dado encontrado.</p>
-        ) : (
-          items.slice(0, 5).map((item, index) => {
+      {items.length === 0 ? (
+        <EmptyData />
+      ) : (
+        <div className="space-y-5">
+          {items.slice(0, 5).map((item, index) => {
             const percentage = (item.appointments / maxValue) * 100;
 
             return (
               <div
                 key={item.id}
-                className="grid grid-cols-[32px_1fr_44px] items-center gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-600 text-sm font-bold text-zinc-300">
+                className="grid grid-cols-[32px_1fr_48px] items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-sm font-semibold text-zinc-300">
                   {index + 1}
                 </span>
 
-                <div>
+                <div className="min-w-0">
                   <div className="mb-2 flex items-center justify-between gap-4">
-                    <span className="text-sm font-medium text-zinc-200">
+                    <span className="truncate text-sm font-medium text-zinc-200">
                       {item.name}
                     </span>
                   </div>
 
                   <div className="h-2 rounded-full bg-zinc-800">
                     <div
-                      className="h-2 rounded-full bg-[#b4ff39] shadow-[0_0_12px_rgba(180,255,57,0.45)]"
+                      className="h-2 rounded-full bg-[#bdff31]"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
                 </div>
 
-                <strong className="text-right text-sm text-white">
+                <strong className="text-right text-sm text-zinc-50">
                   {item.appointments}
                 </strong>
               </div>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
-function BarChartCard({ title, icon, items, barClassName }: BarChartCardProps) {
+function BarChartCard({
+  title,
+  description,
+  icon,
+  items,
+  barClassName,
+}: BarChartCardProps) {
   const maxValue = Math.max(...items.map((item) => item.appointments), 1);
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-linear-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
-      <div className="mb-6 flex items-center gap-3">
-        {icon}
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 shadow-sm">
+      <CardHeader title={title} description={description} icon={icon} />
 
-        <h2 className="text-2xl font-black text-white">{title}</h2>
-      </div>
-
-      <div className="space-y-5">
-        {items.length === 0 ? (
-          <p className="text-zinc-400">Nenhum dado encontrado.</p>
-        ) : (
-          items.map((item) => {
+      {items.length === 0 ? (
+        <EmptyData />
+      ) : (
+        <div className="space-y-5">
+          {items.map((item) => {
             const percentage = (item.appointments / maxValue) * 100;
 
             return (
               <div key={item.id}>
                 <div className="mb-2 flex items-center justify-between gap-4">
-                  <span className="text-sm text-zinc-300">{item.name}</span>
+                  <span className="truncate text-sm text-zinc-300">
+                    {item.name}
+                  </span>
 
-                  <strong className="text-sm text-white">
+                  <strong className="text-sm text-zinc-50">
                     {item.appointments}
                   </strong>
                 </div>
@@ -213,9 +246,9 @@ function BarChartCard({ title, icon, items, barClassName }: BarChartCardProps) {
                 </div>
               </div>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -261,11 +294,7 @@ export default function DashboardClient() {
   }, [loadDashboard]);
 
   if (!data) {
-    return (
-      <section className="min-h-screen bg-[#101010] px-8 py-8 text-white">
-        <p className="text-zinc-300">Carregando dashboard...</p>
-      </section>
-    );
+    return <LoadingState />;
   }
 
   const statusItems = data.appointmentStatus.map((item, index) => ({
@@ -275,130 +304,133 @@ export default function DashboardClient() {
   }));
 
   return (
-    <section className="min-h-screen bg-[#101010] px-8 py-8 text-white">
-      <div className="mx-auto max-w-375">
-        <header className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+    <section className="min-h-screen bg-[#09090b] px-6 py-8 text-white">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        <header className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#b4ff39]">
+            <p className="text-sm font-medium text-lime-300">
               Área Administrativa
             </p>
-
-            <h1 className="mt-2 text-4xl font-black text-white">
+            <h1 className="mt-1 text-3xl font-bold tracking-tight text-zinc-50">
               Dashboard da Administração
             </h1>
-
-            <p className="mt-2 text-zinc-400">
+            <p className="mt-2 max-w-2xl text-sm text-zinc-400">
               Visão geral das principais métricas da barbearia.
             </p>
           </div>
         </header>
 
         {error && (
-          <div className="mb-8 rounded-lg border border-red-500/50 bg-red-950/40 p-4 text-red-200">
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
             {error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
-            title="Agendamentos"
+            title="Total de agendamentos"
             value={data.totalAppointments}
+            description="Volume geral registrado."
             icon={CalendarDays}
-            iconClassName="bg-blue-500"
-            sparkClassName="text-blue-500"
+            tone="border-blue-400/20 bg-blue-400/10 text-blue-300"
           />
 
           <StatCard
-            title="Receita Estimada"
-            value={formatCurrency(data.estimatedRevenue)}
-            icon={CircleDollarSign}
-            iconClassName="bg-emerald-600"
-            sparkClassName="text-emerald-600"
-          />
-
-          <StatCard
-            title="Clientes"
-            value={data.totalClients}
-            icon={Users}
-            iconClassName="bg-purple-500"
-            sparkClassName="text-purple-500"
-          />
-
-          <StatCard
-            title="Barbeiros"
-            value={data.totalBarbers}
-            icon={Scissors}
-            iconClassName="bg-orange-500"
-            sparkClassName="text-orange-500"
-          />
-
-          <StatCard
-            title="Serviços"
-            value={data.totalServices}
-            icon={Briefcase}
-            iconClassName="bg-cyan-500"
-            sparkClassName="text-cyan-500"
-          />
-
-          <StatCard
-            title="Agendamentos Futuros"
+            title="Agendamentos futuros"
             value={data.futureAppointments}
+            description="Reservas ainda programadas."
             icon={Clock3}
-            iconClassName="bg-yellow-500"
-            sparkClassName="text-yellow-500"
+            tone="border-amber-400/20 bg-amber-400/10 text-amber-300"
           />
 
           <StatCard
             title="Concluídos"
             value={data.completedAppointments}
+            description="Atendimentos finalizados."
             icon={CheckCircle2}
-            iconClassName="bg-green-500"
-            sparkClassName="text-green-500"
+            tone="border-emerald-400/20 bg-emerald-400/10 text-emerald-300"
           />
 
           <StatCard
             title="Cancelados"
             value={data.canceledAppointments}
+            description="Agendamentos cancelados."
             icon={XCircle}
-            iconClassName="bg-red-500"
-            sparkClassName="text-red-500"
+            tone="border-red-400/20 bg-red-400/10 text-red-300"
+          />
+
+          <StatCard
+            title="Receita estimada"
+            value={formatCurrency(data.estimatedRevenue)}
+            description="Projeção baseada nos agendamentos."
+            icon={CircleDollarSign}
+            tone="border-lime-400/20 bg-lime-400/10 text-lime-300"
+          />
+
+          <StatCard
+            title="Clientes cadastrados"
+            value={data.totalClients}
+            description="Base atual de clientes."
+            icon={Users}
+            tone="border-cyan-400/20 bg-cyan-400/10 text-cyan-300"
+          />
+
+          <StatCard
+            title="Barbeiros ativos"
+            value={data.totalBarbers}
+            description="Profissionais disponíveis."
+            icon={Scissors}
+            tone="border-violet-400/20 bg-violet-400/10 text-violet-300"
+          />
+
+          <StatCard
+            title="Serviços ativos"
+            value={data.totalServices}
+            description="Catálogo disponível."
+            icon={Briefcase}
+            tone="border-orange-400/20 bg-orange-400/10 text-orange-300"
           />
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           <RankingCard
             title="Serviços mais agendados"
-            icon={<Trophy size={24} className="text-[#b4ff39]" />}
+            description="Os serviços com maior procura."
+            icon={<Trophy size={21} />}
             items={data.topServices}
           />
 
           <RankingCard
             title="Barbeiros com mais atendimentos"
-            icon={<Scissors size={24} className="text-[#b4ff39]" />}
+            description="Ranking por quantidade de agendamentos."
+            icon={<Scissors size={21} />}
             items={data.topBarbers}
           />
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
           <BarChartCard
-            title="Agendamentos por Status"
-            icon={<BarChart3 size={24} className="text-[#b4ff39]" />}
+            title="Agendamentos por status"
+            description="Distribuição dos estados dos agendamentos."
+            icon={<BarChart3 size={21} />}
             items={statusItems}
-            barClassName="bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.45)]"
+            barClassName="bg-blue-400"
           />
 
           <BarChartCard
-            title="Dias da Semana"
-            icon={<CalendarDays size={24} className="text-[#b4ff39]" />}
+            title="Dias da semana"
+            description="Dias com maior movimento."
+            icon={<CalendarDays size={21} />}
             items={data.busiestWeekDays}
-            barClassName="bg-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.45)]"
+            barClassName="bg-violet-400"
           />
 
           <BarChartCard
             title="Horários mais movimentados"
-            icon={<Clock3 size={24} className="text-[#b4ff39]" />}
+            description="Faixas de horário mais buscadas."
+            icon={<Clock3 size={21} />}
             items={data.busiestHours}
-            barClassName="bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.45)]"
+            barClassName="bg-teal-400"
           />
         </div>
       </div>
