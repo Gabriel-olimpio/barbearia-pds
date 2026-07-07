@@ -16,7 +16,21 @@ export async function requireAdmin() {
   }
 
   if (user.role !== "ADMIN") {
-    redirect("/");
+    redirect("/agendamentos");
+  }
+
+  return user;
+}
+
+export async function requireAuth() {
+  const cookieStore = await cookies();
+
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+  const user = await getAuthenticatedUserFromToken(token);
+
+  if (!user) {
+    redirect("/login");
   }
 
   return user;
