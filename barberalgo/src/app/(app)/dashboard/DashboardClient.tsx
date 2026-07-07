@@ -1,7 +1,7 @@
+/** @format */
+
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -11,11 +11,8 @@ import {
   CheckCircle2,
   CircleDollarSign,
   Clock3,
-  Grid2X2,
-  Mail,
   Scissors,
   Trophy,
-  UserRound,
   Users,
   XCircle,
 } from "lucide-react";
@@ -87,58 +84,6 @@ function formatCurrency(value: number) {
   });
 }
 
-function HeaderNavigation() {
-  const pathname = usePathname();
-
-  const links = [
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-      icon: Grid2X2,
-    },
-    {
-      label: "Serviços",
-      href: "/servicos",
-      icon: Scissors,
-    },
-    {
-      label: "Barbeiros",
-      href: "/barbeiros",
-      icon: UserRound,
-    },
-    {
-      label: "Convites",
-      href: "/convites",
-      icon: Mail,
-    },
-  ];
-
-  return (
-    <nav className="flex flex-wrap items-center gap-3">
-      {links.map((link) => {
-        const Icon = link.icon;
-        const active =
-          pathname === link.href || pathname.startsWith(`${link.href}/`);
-
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`flex items-center gap-2 rounded-lg border px-5 py-3 text-sm font-bold transition ${
-              active
-                ? "border-[#b4ff39] bg-[#b4ff39] text-black"
-                : "border-zinc-800 bg-[#151815] text-zinc-200 hover:border-[#b4ff39]/60 hover:text-white"
-            }`}
-          >
-            <Icon size={17} />
-            {link.label}
-          </Link>
-        );
-      })}
-    </nav>
-  );
-}
-
 function StatCard({
   title,
   value,
@@ -158,8 +103,7 @@ function StatCard({
         </div>
 
         <div
-          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${iconClassName}`}
-        >
+          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${iconClassName}`}>
           <Icon size={28} className="text-white" />
         </div>
       </div>
@@ -184,7 +128,7 @@ function RankingCard({ title, icon, items }: RankingCardProps) {
   const maxValue = Math.max(...items.map((item) => item.appointments), 1);
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-gradient-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
+    <div className="rounded-xl border border-zinc-800 bg-linear-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
       <div className="mb-6 flex items-center gap-3">
         {icon}
 
@@ -201,8 +145,7 @@ function RankingCard({ title, icon, items }: RankingCardProps) {
             return (
               <div
                 key={item.id}
-                className="grid grid-cols-[32px_1fr_44px] items-center gap-3"
-              >
+                className="grid grid-cols-[32px_1fr_44px] items-center gap-3">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-600 text-sm font-bold text-zinc-300">
                   {index + 1}
                 </span>
@@ -238,7 +181,7 @@ function BarChartCard({ title, icon, items, barClassName }: BarChartCardProps) {
   const maxValue = Math.max(...items.map((item) => item.appointments), 1);
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-gradient-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
+    <div className="rounded-xl border border-zinc-800 bg-linear-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
       <div className="mb-6 flex items-center gap-3">
         {icon}
 
@@ -333,7 +276,7 @@ export default function DashboardClient() {
 
   return (
     <section className="min-h-screen bg-[#101010] px-8 py-8 text-white">
-      <div className="mx-auto max-w-[1500px]">
+      <div className="mx-auto max-w-375">
         <header className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#b4ff39]">
@@ -348,8 +291,6 @@ export default function DashboardClient() {
               Visão geral das principais métricas da barbearia.
             </p>
           </div>
-
-          <HeaderNavigation />
         </header>
 
         {error && (

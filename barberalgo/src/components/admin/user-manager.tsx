@@ -1,6 +1,6 @@
-"use client";
+/** @format */
 
-import Link from "next/link";
+"use client";
 import { type FormEvent, useMemo, useState } from "react";
 import {
   CheckCircle2,
@@ -240,29 +240,6 @@ export default function UserManager({
               Consulte cadastros, edite perfis e controle usuários ativos.
             </p>
           </div>
-
-          <nav className="flex flex-wrap gap-2 text-xs font-black uppercase">
-            <Link
-              href="/dashboard"
-              className="rounded-md border border-white/10 px-4 py-2.5 text-white/60 hover:border-white/20 hover:text-white">
-              Dashboard
-            </Link>
-            <Link
-              href="/servicos"
-              className="rounded-md border border-white/10 px-4 py-2.5 text-white/60 hover:border-white/20 hover:text-white">
-              Serviços
-            </Link>
-            <Link
-              href="/barbeiros"
-              className="rounded-md border border-white/10 px-4 py-2.5 text-white/60 hover:border-white/20 hover:text-white">
-              Barbeiros
-            </Link>
-            <Link
-              href="/convites"
-              className="rounded-md border border-white/10 px-4 py-2.5 text-white/60 hover:border-white/20 hover:text-white">
-              Convites
-            </Link>
-          </nav>
         </header>
 
         <section className="grid gap-3 sm:grid-cols-3">
@@ -437,9 +414,7 @@ export default function UserManager({
                               {user.phone || "Sem telefone"}
                             </span>
                           </td>
-                          <td className="px-5 py-4">
-                            {roleLabels[user.role]}
-                          </td>
+                          <td className="px-5 py-4">{roleLabels[user.role]}</td>
                           <td className="px-5 py-4">
                             <span
                               className={`rounded px-2 py-1 text-[10px] font-black uppercase ${statusClassName}`}>
@@ -528,9 +503,7 @@ export default function UserManager({
                     <dt className="text-[10px] font-black uppercase text-white/35">
                       E-mail
                     </dt>
-                    <dd className="mt-1 text-white/75">
-                      {selectedUser.email}
-                    </dd>
+                    <dd className="mt-1 text-white/75">{selectedUser.email}</dd>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
