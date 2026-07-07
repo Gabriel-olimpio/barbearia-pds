@@ -1,3 +1,5 @@
+/** @format */
+
 "use client";
 
 import Link from "next/link";
@@ -18,12 +20,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-type UserRole =
-  | "ADMIN"
-  | "CLIENT"
-  | "BARBER"
-  | "PROFESSIONAL"
-  | "PROFISSIONAL";
+type UserRole = "ADMIN" | "CLIENT" | "BARBER" | "PROFESSIONAL" | "PROFISSIONAL";
 
 type SessionUser = {
   id: string;
@@ -248,16 +245,14 @@ export default function Sidebar() {
     <aside
       className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-zinc-800 bg-[#111311] px-4 py-6 transition-all duration-300 ${
         collapsed ? "w-20" : "w-64"
-      }`}
-    >
+      }`}>
       <div
         className={`mb-8 flex items-center ${
           collapsed ? "justify-center" : "justify-between"
-        }`}
-      >
+        }`}>
         {!collapsed && (
-          <h1 className="text-2xl font-black text-white">
-            Barber<span className="text-[#b4ff39]">Algo</span>
+          <h1 className="text-lg font-black uppercase tracking-[-0.04em]">
+            Barber<span className="text-[#b9ff62]">Algo</span>
           </h1>
         )}
 
@@ -273,8 +268,7 @@ export default function Sidebar() {
             onClick={toggleCollapsed}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
             title="Recolher menu"
-            aria-label="Recolher menu"
-          >
+            aria-label="Recolher menu">
             <ChevronLeft size={18} />
           </button>
         )}
@@ -286,8 +280,7 @@ export default function Sidebar() {
           onClick={toggleCollapsed}
           className="mb-6 flex h-9 w-full items-center justify-center rounded-lg border border-zinc-800 text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
           title="Expandir menu"
-          aria-label="Expandir menu"
-        >
+          aria-label="Expandir menu">
           <ChevronRight size={18} />
         </button>
       )}
@@ -317,8 +310,7 @@ export default function Sidebar() {
                   active
                     ? "bg-[#b4ff39] text-black"
                     : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
-                }`}
-              >
+                }`}>
                 <Icon size={18} />
 
                 {!collapsed && <span>{item.label}</span>}
@@ -333,8 +325,7 @@ export default function Sidebar() {
           <div
             className={`absolute bottom-full z-50 mb-3 rounded-xl border border-zinc-800 bg-[#171717] shadow-2xl shadow-black/40 ${
               collapsed ? "left-0 w-56" : "left-0 w-full"
-            }`}
-          >
+            }`}>
             <div className="border-b border-zinc-800 p-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#b4ff39] text-black">
@@ -357,8 +348,7 @@ export default function Sidebar() {
               <button
                 type="button"
                 onClick={handleOpenSettings}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-zinc-200 transition hover:bg-zinc-800"
-              >
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-zinc-200 transition hover:bg-zinc-800">
                 <Settings size={17} />
                 Configurações
               </button>
@@ -366,8 +356,7 @@ export default function Sidebar() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-red-200 transition hover:bg-red-950/50"
-              >
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-red-200 transition hover:bg-red-950/50">
                 <LogOut size={17} />
                 Sair
               </button>
@@ -379,13 +368,10 @@ export default function Sidebar() {
           type="button"
           onClick={() => setProfileMenuOpen((current) => !current)}
           className={`flex w-full items-center rounded-xl border border-zinc-800 bg-[#171717] transition hover:bg-zinc-900 ${
-            collapsed
-              ? "justify-center px-2 py-3"
-              : "justify-between px-3 py-3"
+            collapsed ? "justify-center px-2 py-3" : "justify-between px-3 py-3"
           }`}
-          title={collapsed ? user?.name ?? "Usuário" : undefined}
-          aria-label="Abrir menu do usuário"
-        >
+          title={collapsed ? (user?.name ?? "Usuário") : undefined}
+          aria-label="Abrir menu do usuário">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#b4ff39] text-black">
               <UserRound size={18} />
@@ -394,13 +380,13 @@ export default function Sidebar() {
             {!collapsed && (
               <div className="min-w-0 text-left">
                 <p className="truncate text-sm font-bold text-white">
-                  {loadingUser ? "Carregando..." : user?.name ?? "Usuário"}
+                  {loadingUser ? "Carregando..." : (user?.name ?? "Usuário")}
                 </p>
 
                 <p className="truncate text-xs text-zinc-400">
                   {loadingUser
                     ? "..."
-                    : user?.email ?? getRoleLabel(user?.role)}
+                    : (user?.email ?? getRoleLabel(user?.role))}
                 </p>
               </div>
             )}
