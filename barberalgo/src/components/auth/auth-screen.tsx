@@ -228,10 +228,10 @@ export default function AuthScreen({ initialMode }: AuthScreenProps) {
 
   return (
     <main className="min-h-screen bg-[#222220] text-white selection:bg-[#b9ff62] selection:text-black">
-      <div className="mx-auto grid min-h-screen max-w-[1440px] lg:grid-cols-[0.82fr_1.18fr]">
+      <div className="mx-auto grid min-h-screen max-w-360 lg:grid-cols-[0.82fr_1.18fr]">
         <aside className="relative hidden overflow-hidden border-r border-white/5 bg-[#111110] p-12 lg:flex lg:flex-col lg:justify-between xl:p-16">
           <div className="absolute -left-32 top-1/3 size-96 rounded-full bg-[#b9ff62]/[0.035] blur-3xl" />
-          <div className="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-[#b9ff62]/20 to-transparent" />
+          <div className="absolute right-0 top-0 h-full w-px bg-linear-to-b from-transparent via-[#b9ff62]/20 to-transparent" />
           <Brand />
 
           <div className="relative max-w-md">

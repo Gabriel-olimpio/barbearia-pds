@@ -1,3 +1,5 @@
+/** @format */
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -49,16 +51,19 @@ export default function MeusAgendamentosPage() {
 
   async function cancelAppointment(appointmentId: string) {
     const confirmCancel = confirm(
-      "Tem certeza que deseja cancelar este agendamento?"
+      "Tem certeza que deseja cancelar este agendamento?",
     );
 
     if (!confirmCancel) return;
 
     try {
-      const response = await fetch(`/api/appointments/${appointmentId}/cancel`, {
-        method: "PATCH",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `/api/appointments/${appointmentId}/cancel`,
+        {
+          method: "PATCH",
+          credentials: "include",
+        },
+      );
 
       const text = await response.text();
 
@@ -133,12 +138,12 @@ export default function MeusAgendamentosPage() {
   const futureAppointments = appointments.filter(isFutureAppointment);
 
   const oldAppointments = appointments.filter(
-    (appointment) => !isFutureAppointment(appointment)
+    (appointment) => !isFutureAppointment(appointment),
   );
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#101010] px-6 py-10 text-white">
+      <main className="min-h-screen flex items-center justify-center bg-[#101010] px-6 py-10 text-white">
         <section className="mx-auto max-w-5xl">
           <p>Carregando agendamentos...</p>
         </section>
@@ -179,8 +184,7 @@ export default function MeusAgendamentosPage() {
               {futureAppointments.map((appointment) => (
                 <div
                   key={appointment.id}
-                  className="rounded-lg border border-zinc-800 bg-[#151515] p-6"
-                >
+                  className="rounded-lg border border-zinc-800 bg-[#151515] p-6">
                   <p>
                     <strong>Serviço:</strong> {appointment.service.name}
                   </p>
@@ -209,8 +213,7 @@ export default function MeusAgendamentosPage() {
                   <button
                     type="button"
                     onClick={() => cancelAppointment(appointment.id)}
-                    className="mt-5 rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700"
-                  >
+                    className="mt-5 rounded-lg bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700">
                     Cancelar
                   </button>
                 </div>
@@ -231,8 +234,7 @@ export default function MeusAgendamentosPage() {
               {oldAppointments.map((appointment) => (
                 <div
                   key={appointment.id}
-                  className="rounded-lg border border-zinc-800 bg-[#151515] p-6"
-                >
+                  className="rounded-lg border border-zinc-800 bg-[#151515] p-6">
                   <p>
                     <strong>Serviço:</strong> {appointment.service.name}
                   </p>
