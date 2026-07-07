@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 import {
   Calendar,
   LayoutDashboard,
@@ -13,7 +14,13 @@ import {
   Users,
 } from "lucide-react";
 
-const menuItems = [
+type MenuItem = {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+};
+
+const menuItems: MenuItem[] = [
   {
     label: "Dashboard",
     href: "/dashboard",
@@ -58,6 +65,21 @@ const menuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleLogout() {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      router.replace("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  }
 
   return (
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-zinc-800 bg-[#111311] px-5 py-6">
@@ -91,13 +113,14 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <Link
-        href="/login"
-        className="mt-8 flex items-center gap-3 rounded-lg border border-red-500/60 bg-red-950/40 px-4 py-3 text-sm font-bold text-red-200 hover:bg-red-900/60"
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="mt-8 flex items-center gap-3 rounded-lg border border-red-500/60 bg-red-950/40 px-4 py-3 text-sm font-bold text-red-200 transition hover:bg-red-900/60"
       >
         <LogOut size={18} />
         Sair
-      </Link>
+      </button>
     </aside>
   );
 }

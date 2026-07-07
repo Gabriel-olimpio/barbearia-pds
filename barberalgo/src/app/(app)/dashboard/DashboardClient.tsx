@@ -147,7 +147,7 @@ function StatCard({
   sparkClassName,
 }: StatCardProps) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-gradient-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
+    <div className="rounded-xl border border-zinc-800 bg-linear-to-br from-[#171a17] to-[#101210] p-6 shadow-lg shadow-black/30">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-zinc-400">{title}</p>
