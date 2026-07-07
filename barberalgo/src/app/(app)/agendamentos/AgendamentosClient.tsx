@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ptBR } from "date-fns/locale";
-import { LogOut } from "lucide-react";
 
 type Agendamento = {
   id: string;
@@ -257,15 +256,6 @@ export default function AgendamentosClient() {
     setMostrarConfirmacao(true);
   };
 
-  // Função temporaria
-  async function handleLogout() {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-    });
-
-    window.location.href = "/login";
-  }
-
   return (
     <main className="min-h-screen bg-[#121214] py-12 px-6 font-sans">
       <div className="max-w-5xl mx-auto">
@@ -273,13 +263,6 @@ export default function AgendamentosClient() {
           <h1 className="text-4xl font-bold text-white mb-3">
             Agendamento de Serviços
           </h1>
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition hover:bg-red-600">
-            <LogOut size={18} />
-            LOGOUT TEMPORÁRIO
-          </button>
 
           <p className="text-zinc-400">Agende seus serviços</p>
         </div>
