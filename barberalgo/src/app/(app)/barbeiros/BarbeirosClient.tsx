@@ -47,10 +47,10 @@ function mapBarber(barber: BarberResponse): Barbeiro {
 }
 
 function formatarHorario(totalMinutos: number) {
-  const hora = Math.floor(totalMinutos / 60);
+  const fontHora = Math.floor(totalMinutos / 60);
   const minuto = totalMinutos % 60;
 
-  return `${hora.toString().padStart(2, "0")}:${minuto
+  return `${fontHora.toString().padStart(2, "0")}:${minuto
     .toString()
     .padStart(2, "0")}`;
 }
@@ -77,7 +77,7 @@ const horarios = Array.from(
   (_, index) => primeiroHorarioEmMinutos + index * intervaloEmMinutos,
 );
 
-export default function BarbeirosPage() {
+export default function BarbeirosClient() {
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [horariosSelecionados, setHorariosSelecionados] = useState<string[]>(

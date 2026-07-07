@@ -19,7 +19,7 @@ type Agendamento = {
   };
 };
 
-export default function AgendamentosPage() {
+export default function AgendamentosClient() {
   const [servico, setServico] = useState("");
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
@@ -352,14 +352,14 @@ export default function AgendamentosPage() {
                       key={hora}
                       onClick={() => setHorario(hora)}
                       className={`
-                      px-4 py-2 rounded-lg border transition-all
+                       px-4 py-2 rounded-lg border transition-all
 
-                      ${
-                        horario === hora
-                          ? "bg-[#bdff31] text-black border-[#bdff31]"
-                          : "bg-[#121214] text-white border-zinc-700 hover:border-[#bdff31]"
-                      }
-                    `}>
+                       ${
+                         horario === hora
+                           ? "bg-[#bdff31] text-black border-[#bdff31]"
+                           : "bg-[#121214] text-white border-zinc-700 hover:border-[#bdff31]"
+                       }
+                     `}>
                       {hora}
                     </button>
                   ))}

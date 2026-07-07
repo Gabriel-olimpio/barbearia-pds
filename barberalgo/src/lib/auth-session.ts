@@ -10,7 +10,9 @@ export async function getAuthenticatedUser(request: NextRequest) {
 export async function getAuthenticatedUserFromToken(token?: string) {
   const session = token ? parseSessionToken(token) : null;
 
-  if (!session) return null;
+  if (!session) {
+    return null;
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
@@ -23,7 +25,11 @@ export async function getAuthenticatedUserFromToken(token?: string) {
     },
   });
 
-  if (!user || user.sessionVersion !== session.sessionVersion) {
+  if (!user) {
+    return null;
+  }
+
+  if (user.sessionVersion !== session.sessionVersion) {
     return null;
   }
 

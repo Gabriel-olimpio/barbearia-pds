@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUser } from "@/lib/auth-session";
 
 function serviceToResponse(service: {
   id: string;
@@ -86,6 +87,22 @@ export async function GET() {
 
 // POST para cadastrar serviços no banco de dados
 export async function POST(request: NextRequest) {
+  const user = await getAuthenticatedUser(request);
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Usuário não autenticado." },
+      { status: 401 },
+    );
+  }
+
+  if (user.role !== "ADMIN") {
+    return NextResponse.json(
+      { error: "Acesso não autorizado." },
+      { status: 403 },
+    );
+  }
+
   const payload = await parseServicePayload(request);
 
   if ("error" in payload) {

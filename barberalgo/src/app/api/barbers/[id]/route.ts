@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUser } from "@/lib/auth-session";
 import {
   barberInclude,
   barberToResponse,
@@ -13,6 +14,22 @@ type RouteContext = {
 };
 
 export async function PUT(request: NextRequest, context: RouteContext) {
+  const user = await getAuthenticatedUser(request);
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Usuário não autenticado." },
+      { status: 401 },
+    );
+  }
+
+  if (user.role !== "ADMIN") {
+    return NextResponse.json(
+      { error: "Acesso não autorizado." },
+      { status: 403 },
+    );
+  }
+
   const { id } = await context.params;
   const payload = await parseBarberPayload(request);
 
@@ -93,7 +110,23 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 }
 
-export async function DELETE(_request: NextRequest, context: RouteContext) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  const user = await getAuthenticatedUser(request);
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Usuário não autenticado." },
+      { status: 401 },
+    );
+  }
+
+  if (user.role !== "ADMIN") {
+    return NextResponse.json(
+      { error: "Acesso não autorizado." },
+      { status: 403 },
+    );
+  }
+
   const { id } = await context.params;
 
   try {
