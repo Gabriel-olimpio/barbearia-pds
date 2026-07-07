@@ -1,15 +1,14 @@
-/** @format */
-
 "use client";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   LayoutDashboard,
   LogOut,
   Mail,
@@ -19,7 +18,12 @@ import {
   UserRound,
 } from "lucide-react";
 
-type UserRole = "ADMIN" | "CLIENT" | "BARBER" | "PROFESSIONAL" | "PROFISSIONAL";
+type UserRole =
+  | "ADMIN"
+  | "CLIENT"
+  | "BARBER"
+  | "PROFESSIONAL"
+  | "PROFISSIONAL";
 
 type SessionUser = {
   id: string;
@@ -36,14 +40,14 @@ type MenuItem = {
 
 const adminMenuItems: MenuItem[] = [
   {
-    label: "Serviços",
-    href: "/servicos",
-    icon: Scissors,
-  },
-  {
     label: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    label: "Serviços",
+    href: "/servicos",
+    icon: Scissors,
   },
   {
     label: "Barbeiros",
@@ -60,11 +64,6 @@ const adminMenuItems: MenuItem[] = [
     href: "/gerenciamento-usuarios",
     icon: UserCog,
   },
-  {
-    label: "Configurações",
-    href: "/configuracoes",
-    icon: Settings,
-  },
 ];
 
 const clientMenuItems: MenuItem[] = [
@@ -78,11 +77,6 @@ const clientMenuItems: MenuItem[] = [
     href: "/meus-agendamentos",
     icon: Calendar,
   },
-  {
-    label: "Configurações",
-    href: "/configuracoes",
-    icon: Settings,
-  },
 ];
 
 const professionalMenuItems: MenuItem[] = [
@@ -90,11 +84,6 @@ const professionalMenuItems: MenuItem[] = [
     label: "Agenda",
     href: "/agenda-barbeiro",
     icon: Calendar,
-  },
-  {
-    label: "Configurações",
-    href: "/configuracoes",
-    icon: Settings,
   },
 ];
 
@@ -137,10 +126,12 @@ function getRoleLabel(role?: UserRole | string | null) {
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   const [user, setUser] = useState<SessionUser | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -200,11 +191,32 @@ export default function Sidebar() {
     };
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
+        setProfileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   function toggleCollapsed() {
     setCollapsed((currentValue) => {
       const nextValue = !currentValue;
 
       localStorage.setItem("sidebar-collapsed", String(nextValue));
+
+      if (nextValue) {
+        setProfileMenuOpen(false);
+      }
 
       return nextValue;
     });
@@ -217,11 +229,17 @@ export default function Sidebar() {
         credentials: "include",
       });
 
+      setProfileMenuOpen(false);
       router.replace("/login");
       router.refresh();
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
+  }
+
+  function handleOpenSettings() {
+    setProfileMenuOpen(false);
+    router.push("/configuracoes");
   }
 
   const menuItems = getMenuItemsByRole(user?.role);
@@ -230,14 +248,16 @@ export default function Sidebar() {
     <aside
       className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-zinc-800 bg-[#111311] px-4 py-6 transition-all duration-300 ${
         collapsed ? "w-20" : "w-64"
-      }`}>
+      }`}
+    >
       <div
         className={`mb-8 flex items-center ${
           collapsed ? "justify-center" : "justify-between"
-        }`}>
+        }`}
+      >
         {!collapsed && (
-          <h1 className="text-lg font-black uppercase tracking-[-0.04em]">
-            Barber<span className="text-[#b9ff62]">Algo</span>
+          <h1 className="text-2xl font-black text-white">
+            Barber<span className="text-[#b4ff39]">Algo</span>
           </h1>
         )}
 
@@ -253,7 +273,8 @@ export default function Sidebar() {
             onClick={toggleCollapsed}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
             title="Recolher menu"
-            aria-label="Recolher menu">
+            aria-label="Recolher menu"
+          >
             <ChevronLeft size={18} />
           </button>
         )}
@@ -265,25 +286,10 @@ export default function Sidebar() {
           onClick={toggleCollapsed}
           className="mb-6 flex h-9 w-full items-center justify-center rounded-lg border border-zinc-800 text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
           title="Expandir menu"
-          aria-label="Expandir menu">
+          aria-label="Expandir menu"
+        >
           <ChevronRight size={18} />
         </button>
-      )}
-
-      {!collapsed && user && (
-        <div className="mb-6 rounded-xl border border-zinc-800 bg-[#171a17] p-4">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#b4ff39]">
-            Perfil
-          </p>
-
-          <p className="mt-2 truncate text-sm font-bold text-white">
-            {user.name}
-          </p>
-
-          <p className="mt-1 text-xs text-zinc-400">
-            {getRoleLabel(user.role)}
-          </p>
-        </div>
       )}
 
       <nav className="flex flex-1 flex-col gap-2">
@@ -311,7 +317,8 @@ export default function Sidebar() {
                   active
                     ? "bg-[#b4ff39] text-black"
                     : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
-                }`}>
+                }`}
+              >
                 <Icon size={18} />
 
                 {!collapsed && <span>{item.label}</span>}
@@ -321,18 +328,94 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <button
-        type="button"
-        onClick={handleLogout}
-        title={collapsed ? "Sair" : undefined}
-        aria-label="Sair"
-        className={`mt-8 flex items-center rounded-lg border border-red-500/60 bg-red-950/40 px-4 py-3 text-sm font-bold text-red-200 transition hover:bg-red-900/60 ${
-          collapsed ? "justify-center" : "gap-3"
-        }`}>
-        <LogOut size={18} />
+      <div className="relative mt-8" ref={profileMenuRef}>
+        {profileMenuOpen && (
+          <div
+            className={`absolute bottom-full z-50 mb-3 rounded-xl border border-zinc-800 bg-[#171717] shadow-2xl shadow-black/40 ${
+              collapsed ? "left-0 w-56" : "left-0 w-full"
+            }`}
+          >
+            <div className="border-b border-zinc-800 p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#b4ff39] text-black">
+                  <UserRound size={20} />
+                </div>
 
-        {!collapsed && <span>Sair</span>}
-      </button>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-white">
+                    {user?.name ?? "Usuário"}
+                  </p>
+
+                  <p className="truncate text-xs text-zinc-400">
+                    {user?.email ?? getRoleLabel(user?.role)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-2">
+              <button
+                type="button"
+                onClick={handleOpenSettings}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-zinc-200 transition hover:bg-zinc-800"
+              >
+                <Settings size={17} />
+                Configurações
+              </button>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-red-200 transition hover:bg-red-950/50"
+              >
+                <LogOut size={17} />
+                Sair
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setProfileMenuOpen((current) => !current)}
+          className={`flex w-full items-center rounded-xl border border-zinc-800 bg-[#171717] transition hover:bg-zinc-900 ${
+            collapsed
+              ? "justify-center px-2 py-3"
+              : "justify-between px-3 py-3"
+          }`}
+          title={collapsed ? user?.name ?? "Usuário" : undefined}
+          aria-label="Abrir menu do usuário"
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#b4ff39] text-black">
+              <UserRound size={18} />
+            </div>
+
+            {!collapsed && (
+              <div className="min-w-0 text-left">
+                <p className="truncate text-sm font-bold text-white">
+                  {loadingUser ? "Carregando..." : user?.name ?? "Usuário"}
+                </p>
+
+                <p className="truncate text-xs text-zinc-400">
+                  {loadingUser
+                    ? "..."
+                    : user?.email ?? getRoleLabel(user?.role)}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!collapsed && (
+            <ChevronUp
+              size={18}
+              className={`shrink-0 text-zinc-400 transition-transform ${
+                profileMenuOpen ? "rotate-0" : "rotate-180"
+              }`}
+            />
+          )}
+        </button>
+      </div>
     </aside>
   );
 }
