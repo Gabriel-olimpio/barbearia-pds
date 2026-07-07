@@ -1,10 +1,10 @@
 /** @format */
 
 import DashboardClient from "./DashboardClient";
-// import { requireAdmin } from "@/lib/dashboard-auth";
+import { requireAdmin } from "@/lib/dashboard-auth";
 
 export default async function DashboardPage() {
-  // const user = await requireAdmin();
+  await requireAdmin();
 
   return (
     <div>

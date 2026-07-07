@@ -1,8 +1,6 @@
-import ServicosClient from "./ServicosClient";
-import { requireAdmin } from "@/lib/dashboard-auth";
+/** @format */
 
-export default async function ServicosPage() {
-  await requireAdmin();
+"use client";
 
 import { type SyntheticEvent, useEffect, useState } from "react";
 
@@ -34,7 +32,7 @@ function mapService(service: ServiceResponse): Servico {
   };
 }
 
-export default function Servicos() {
+export default function ServicosClient() {
   const [nome, setNome] = useState("");
   const [preco, setPreco] = useState("");
   const [duracao, setDuracao] = useState("");
@@ -214,6 +212,7 @@ export default function Servicos() {
             Cadastre, edite e remova os serviços que aparecem para os clientes.
           </p>
         </section>
+
         {erro && (
           <div className="rounded-md border border-red-400/40 bg-red-950/40 px-4 py-3 text-sm text-red-100">
             <p data-testid="service-error">{erro}</p>
