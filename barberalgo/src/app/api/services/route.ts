@@ -11,6 +11,7 @@ function serviceToResponse(service: {
   description: string | null;
   durationMinutes: number;
   price: Prisma.Decimal;
+  active: boolean;
 }) {
   return {
     id: service.id,
@@ -18,6 +19,7 @@ function serviceToResponse(service: {
     description: service.description,
     durationMinutes: service.durationMinutes,
     price: service.price.toString(),
+    active: service.active,
   };
 }
 
@@ -63,12 +65,17 @@ async function parseServicePayload(request: NextRequest) {
 }
 
 // GET para carregar serviços do banco de dados
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const user = await getAuthenticatedUser(request);
+    const whereClause: Prisma.ServiceWhereInput = {};
+
+    if (!user || user.role !== "ADMIN") {
+      whereClause.active = true;
+    }
+
     const services = await prisma.service.findMany({
-      where: {
-        active: true,
-      },
+      where: whereClause,
       orderBy: {
         createdAt: "desc",
       },

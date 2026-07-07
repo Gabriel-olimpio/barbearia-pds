@@ -15,6 +15,7 @@ function serviceToResponse(service: {
   description: string | null;
   durationMinutes: number;
   price: Prisma.Decimal;
+  active: boolean;
 }) {
   return {
     id: service.id,
@@ -22,6 +23,7 @@ function serviceToResponse(service: {
     description: service.description,
     durationMinutes: service.durationMinutes,
     price: service.price.toString(),
+    active: service.active,
   };
 }
 
@@ -164,6 +166,55 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
   } catch {
     return NextResponse.json(
       { error: "Erro ao excluir serviço." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest, context: RouteContext) {
+  const user = await getAuthenticatedUser(request);
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Usuário não autenticado." },
+      { status: 401 },
+    );
+  }
+
+  if (user.role !== "ADMIN") {
+    return NextResponse.json(
+      { error: "Acesso não autorizado." },
+      { status: 403 },
+    );
+  }
+
+  const { id } = await context.params;
+
+  try {
+    const service = await prisma.service.findUnique({
+      where: { id },
+    });
+
+    if (!service) {
+      return NextResponse.json(
+        { error: "Serviço não encontrado." },
+        { status: 404 },
+      );
+    }
+
+    const updatedService = await prisma.service.update({
+      where: { id },
+      data: {
+        active: !service.active,
+      },
+    });
+
+    return NextResponse.json({
+      service: serviceToResponse(updatedService),
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Erro ao alterar status do serviço." },
       { status: 500 }
     );
   }

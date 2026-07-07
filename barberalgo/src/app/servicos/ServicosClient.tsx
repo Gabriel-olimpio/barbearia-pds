@@ -10,6 +10,7 @@ type Servico = {
   preco: string;
   duracao: string;
   descricao: string;
+  active: boolean;
 };
 
 type ServiceResponse = {
@@ -18,6 +19,7 @@ type ServiceResponse = {
   price: string;
   durationMinutes: number;
   description: string | null;
+  active: boolean;
 };
 
 const duracoes = ["15", "30", "45", "60"];
@@ -29,6 +31,7 @@ function mapService(service: ServiceResponse): Servico {
     preco: service.price,
     duracao: String(service.durationMinutes),
     descricao: service.description ?? "",
+    active: service.active,
   };
 }
 
@@ -165,10 +168,11 @@ export default function ServicosClient() {
     setErro("");
   }
 
-  async function excluirServico(id: string) {
-    const deveExcluir = window.confirm("Deseja excluir este serviço?");
+  async function toggleStatus(id: string, currentActive: boolean) {
+    const action = currentActive ? "desativar" : "reativar";
+    const confirmToggle = window.confirm(`Deseja realmente ${action} este serviço?`);
 
-    if (!deveExcluir) {
+    if (!confirmToggle) {
       return;
     }
 
@@ -176,24 +180,28 @@ export default function ServicosClient() {
 
     try {
       const response = await fetch(`/api/services/${id}`, {
-        method: "DELETE",
+        method: "PATCH",
       });
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Erro ao excluir serviço.");
+        throw new Error(data.error ?? `Erro ao ${action} serviço.`);
       }
 
+      const servicoSalvo = mapService(data.service);
+
       setServicos((listaAtual) =>
-        listaAtual.filter((servico) => servico.id !== id),
+        listaAtual.map((servico) =>
+          servico.id === id ? servicoSalvo : servico,
+        ),
       );
 
-      if (editandoId === id) {
+      if (editandoId === id && !servicoSalvo.active) {
         limparFormulario();
       }
     } catch (error) {
       setErro(
-        error instanceof Error ? error.message : "Erro ao excluir serviço.",
+        error instanceof Error ? error.message : `Erro ao ${action} serviço.`,
       );
     }
   }
@@ -245,7 +253,9 @@ export default function ServicosClient() {
                 className={`flex min-h-44 flex-col justify-between rounded-md p-5 shadow-sm transition hover:-translate-y-0.5 ${
                   editandoId === servico.id
                     ? "bg-[#b9ff62] text-black"
-                    : "bg-[#111111] text-white hover:bg-[#171717]"
+                    : servico.active === false
+                      ? "bg-[#1a1a1a] text-white/50 border border-dashed border-white/20 opacity-60"
+                      : "bg-[#111111] text-white hover:bg-[#171717]"
                 }`}>
                 <div>
                   <div className="mb-5 flex items-start justify-between gap-3">
@@ -260,14 +270,27 @@ export default function ServicosClient() {
                       )}
                     </span>
 
-                    <span
-                      className={`rounded px-2 py-1 text-[10px] font-black ${
-                        editandoId === servico.id
-                          ? "bg-black text-white"
-                          : "bg-white text-black"
-                      }`}>
-                      {servico.duracao} min
-                    </span>
+                    <div className="flex gap-2">
+                      <span
+                        className={`rounded px-2 py-1 text-[10px] font-black ${
+                          servico.active === false
+                            ? "bg-zinc-800 text-zinc-400"
+                            : editandoId === servico.id
+                              ? "bg-black text-white"
+                              : "bg-white text-black"
+                        }`}>
+                        {servico.active === false ? "Desativado" : "Ativo"}
+                      </span>
+
+                      <span
+                        className={`rounded px-2 py-1 text-[10px] font-black ${
+                          editandoId === servico.id
+                            ? "bg-black text-white"
+                            : "bg-white/10 text-white"
+                        }`}>
+                        {servico.duracao} min
+                      </span>
+                    </div>
                   </div>
 
                   <h2 className="text-xs font-black uppercase leading-snug">
@@ -294,23 +317,28 @@ export default function ServicosClient() {
                   <div className="mt-4 flex gap-2">
                     <button
                       type="button"
+                      disabled={servico.active === false}
                       onClick={() => editarServico(servico)}
                       className={`rounded px-3 py-2 text-xs font-black ${
-                        editandoId === servico.id
-                          ? "bg-black text-white"
-                          : "bg-[#b9ff62] text-black"
+                        servico.active === false
+                          ? "bg-zinc-800 text-zinc-650 cursor-not-allowed"
+                          : editandoId === servico.id
+                            ? "bg-black text-white"
+                            : "bg-[#b9ff62] text-black"
                       }`}>
                       Editar
                     </button>
                     <button
                       type="button"
-                      onClick={() => excluirServico(servico.id)}
+                      onClick={() => toggleStatus(servico.id, servico.active)}
                       className={`rounded border px-3 py-2 text-xs font-black ${
                         editandoId === servico.id
                           ? "border-black text-black"
-                          : "border-red-400/60 text-red-200"
+                          : servico.active === false
+                            ? "border-green-500/60 text-green-300 hover:bg-green-500/10"
+                            : "border-red-400/60 text-red-200 hover:bg-red-500/10"
                       }`}>
-                      Excluir
+                      {servico.active === false ? "Reativar" : "Desativar"}
                     </button>
                   </div>
                 </div>
