@@ -7,6 +7,7 @@ import {
   Briefcase,
   Users,
   UserRoundCog,
+  ShieldCheck,
 } from "lucide-react";
 
 const links = [
@@ -24,6 +25,11 @@ const links = [
     href: "/barbeiros",
     label: "Barbeiros",
     icon: Users,
+  },
+  {
+    href: "/gerenciamento-usuarios",
+    label: "Usuários",
+    icon: ShieldCheck,
   },
   {
     href: "/convites",

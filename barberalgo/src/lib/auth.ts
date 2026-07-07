@@ -1,3 +1,5 @@
+/** @format */
+
 import {
   createHmac,
   randomBytes,
@@ -129,5 +131,6 @@ export const sessionCookieOptions = {
 
 export function getRouteForRole(role: UserRole) {
   if (role === "ADMIN") return "/dashboard";
+  if (role === "BARBER") return "/agenda-barbeiro";
   return "/agendamentos";
 }

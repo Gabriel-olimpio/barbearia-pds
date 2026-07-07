@@ -99,6 +99,7 @@ export default function InviteManager({ initialInvites }: { initialInvites: Invi
           <nav className="flex gap-2 text-xs font-black uppercase">
             <Link href="/servicos" className="rounded-md border border-white/10 px-4 py-2.5 text-white/60 hover:border-white/20 hover:text-white">Serviços</Link>
             <Link href="/barbeiros" className="rounded-md border border-white/10 px-4 py-2.5 text-white/60 hover:border-white/20 hover:text-white">Barbeiros</Link>
+            <Link href="/gerenciamento-usuarios" className="rounded-md border border-white/10 px-4 py-2.5 text-white/60 hover:border-white/20 hover:text-white">Usuários</Link>
           </nav>
         </header>
 

@@ -28,6 +28,7 @@ model User {
   passwordHash         String
   sessionVersion       Int           @default(0)
   role                 UserRole      @default(CLIENT)
+  active               Boolean       @default(true)
   barberProfile        BarberProfile?
   appointments         Appointment[] @relation("ClientAppointments")
   canceledAppointments Appointment[] @relation("CanceledAppointments")
