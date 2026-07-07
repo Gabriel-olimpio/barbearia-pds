@@ -57,7 +57,7 @@ function UserIcon() {
   );
 }
 
-function ScissorsIcon() {
+export function ScissorsIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-5">
       <circle cx="6" cy="7" r="3" stroke="currentColor" strokeWidth="1.8" />
