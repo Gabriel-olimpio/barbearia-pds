@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
         name: true,
         email: true,
         role: true,
+        active: true,
         sessionVersion: true,
         passwordHash: true,
         barberProfile: { select: { active: true } },
@@ -60,6 +61,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "E-mail ou senha incorretos." },
         { status: 401 },
+      );
+    }
+
+    if (!user.active) {
+      return NextResponse.json(
+        { error: "Este usuário está inativo." },
+        { status: 403 },
       );
     }
 

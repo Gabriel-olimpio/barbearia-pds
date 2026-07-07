@@ -21,11 +21,12 @@ export async function getAuthenticatedUserFromToken(token?: string) {
       name: true,
       email: true,
       role: true,
+      active: true,
       sessionVersion: true,
     },
   });
 
-  if (!user) {
+  if (!user || !user.active) {
     return null;
   }
 
