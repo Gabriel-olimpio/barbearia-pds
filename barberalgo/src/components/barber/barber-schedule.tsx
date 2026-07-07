@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Clock3,
   Eye,
-  LogOut,
   Scissors,
   UserRound,
   UserX,
@@ -71,7 +70,9 @@ function formatPrice(value: string) {
 }
 
 function getDurationLabel(minutes: number) {
-  if (minutes < 60) return `${minutes} min`;
+  if (minutes < 60) {
+    return `${minutes} min`;
+  }
 
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
@@ -111,8 +112,9 @@ export default function BarberSchedule({
   const [now, setNow] = useState(() => new Date());
 
   const selectedAppointment =
-    appointments.find((appointment) => appointment.id === selectedAppointmentId) ??
-    null;
+    appointments.find(
+      (appointment) => appointment.id === selectedAppointmentId,
+    ) ?? null;
 
   const tabCounts = useMemo(() => {
     const todayStart = startOfDay(now).getTime();
@@ -173,7 +175,11 @@ export default function BarberSchedule({
 
   const groupedAppointments = useMemo(() => {
     return visibleAppointments.reduce<
-      Array<{ dateKey: string; label: string; appointments: BarberAppointmentItem[] }>
+      Array<{
+        dateKey: string;
+        label: string;
+        appointments: BarberAppointmentItem[];
+      }>
     >((groups, appointment) => {
       const date = new Date(appointment.startsAt);
       const dateKey = startOfDay(date).toISOString();
@@ -203,11 +209,14 @@ export default function BarberSchedule({
       COMPLETED: "marcar como concluído",
       NO_SHOW: "marcar como não compareceu",
     };
+
     const confirmed = window.confirm(
       `Deseja ${actionLabels[status]} o atendimento de ${appointment.clientName}?`,
     );
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      return;
+    }
 
     setUpdatingId(appointment.id);
     setError("");
@@ -221,6 +230,7 @@ export default function BarberSchedule({
         },
         body: JSON.stringify({ status }),
       });
+
       const data = (await response.json()) as {
         appointment?: BarberAppointmentItem;
         error?: string;
@@ -237,6 +247,7 @@ export default function BarberSchedule({
             : currentAppointment,
         ),
       );
+
       setSelectedAppointmentId(data.appointment.id);
       setMessage("Agendamento atualizado com sucesso.");
     } catch (requestError) {
@@ -248,14 +259,6 @@ export default function BarberSchedule({
     } finally {
       setUpdatingId("");
     }
-  }
-
-  async function handleLogout() {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-    });
-
-    window.location.href = "/login";
   }
 
   useEffect(() => {
@@ -273,6 +276,7 @@ export default function BarberSchedule({
       appointment.status === "SCHEDULED" &&
       isSameDay(new Date(appointment.startsAt), now),
   ).length;
+
   const nextScheduled = appointments.find(
     (appointment) =>
       appointment.status === "SCHEDULED" &&
@@ -287,19 +291,13 @@ export default function BarberSchedule({
             <span className="text-xs font-black uppercase tracking-wide text-[#b9ff62]">
               Área do barbeiro
             </span>
+
             <h1 className="mt-2 text-2xl font-black uppercase">
               Agenda de atendimentos
             </h1>
+
             <p className="mt-1 text-sm text-white/55">{barberName}</p>
           </div>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex h-11 items-center justify-center gap-2 rounded-md border border-red-400/30 px-4 text-xs font-black uppercase text-red-100 hover:border-red-300/60">
-            <LogOut size={16} />
-            Sair
-          </button>
         </header>
 
         <section className="grid gap-3 sm:grid-cols-3">
@@ -307,20 +305,25 @@ export default function BarberSchedule({
             <p className="text-[10px] font-black uppercase text-[#b9ff62]">
               Hoje
             </p>
+
             <p className="mt-2 text-2xl font-black">{scheduledToday}</p>
           </div>
+
           <div className="rounded-md border border-white/10 bg-[#171717] p-4">
             <p className="text-[10px] font-black uppercase text-white/40">
               Próximo horário
             </p>
+
             <p className="mt-2 text-lg font-black">
               {nextScheduled ? formatTime(nextScheduled.startsAt) : "--:--"}
             </p>
           </div>
+
           <div className="rounded-md border border-white/10 bg-[#171717] p-4">
             <p className="text-[10px] font-black uppercase text-white/40">
               Total na agenda
             </p>
+
             <p className="mt-2 text-2xl font-black">{appointments.length}</p>
           </div>
         </section>
@@ -351,12 +354,17 @@ export default function BarberSchedule({
                     active
                       ? "bg-[#b9ff62] text-black"
                       : "text-white/60 hover:bg-white/5 hover:text-white"
-                  }`}>
+                  }`}
+                >
                   {tab.label}
+
                   <span
                     className={`rounded px-2 py-0.5 text-[10px] ${
-                      active ? "bg-black text-white" : "bg-white/10 text-white/55"
-                    }`}>
+                      active
+                        ? "bg-black text-white"
+                        : "bg-white/10 text-white/55"
+                    }`}
+                  >
                     {tabCounts[tab.id]}
                   </span>
                 </button>
@@ -375,7 +383,8 @@ export default function BarberSchedule({
               groupedAppointments.map((group) => (
                 <div
                   key={group.dateKey}
-                  className="overflow-hidden rounded-md border border-white/10 bg-[#171717]">
+                  className="overflow-hidden rounded-md border border-white/10 bg-[#171717]"
+                >
                   <div className="border-b border-white/10 bg-[#101010] px-5 py-3">
                     <h2 className="text-xs font-black uppercase text-white/60">
                       {group.label}
@@ -384,7 +393,8 @@ export default function BarberSchedule({
 
                   <div className="divide-y divide-white/5">
                     {group.appointments.map((appointment) => {
-                      const isSelected = appointment.id === selectedAppointmentId;
+                      const isSelected =
+                        appointment.id === selectedAppointmentId;
                       const isUpdating = updatingId === appointment.id;
 
                       return (
@@ -392,11 +402,13 @@ export default function BarberSchedule({
                           key={appointment.id}
                           className={`grid gap-4 px-5 py-4 transition lg:grid-cols-[86px_1fr_auto] lg:items-center ${
                             isSelected ? "bg-[#b9ff62]/5" : ""
-                          }`}>
+                          }`}
+                        >
                           <div className="flex items-center gap-3 lg:block">
                             <p className="text-xl font-black text-white">
                               {formatTime(appointment.startsAt)}
                             </p>
+
                             <p className="text-xs font-bold text-white/40">
                               {getDurationLabel(
                                 appointment.serviceDurationMinutes,
@@ -409,11 +421,14 @@ export default function BarberSchedule({
                               <h3 className="font-black uppercase leading-tight text-white">
                                 {appointment.clientName}
                               </h3>
+
                               <span
-                                className={`rounded px-2 py-1 text-[10px] font-black uppercase ${statusStyles[appointment.status]}`}>
+                                className={`rounded px-2 py-1 text-[10px] font-black uppercase ${statusStyles[appointment.status]}`}
+                              >
                                 {statusLabels[appointment.status]}
                               </span>
                             </div>
+
                             <p className="mt-1 text-sm text-white/55">
                               {appointment.serviceName} ·{" "}
                               {formatPrice(appointment.servicePrice)}
@@ -427,7 +442,8 @@ export default function BarberSchedule({
                                 setSelectedAppointmentId(appointment.id)
                               }
                               title="Ver detalhes"
-                              className="grid size-9 place-items-center rounded-md border border-white/10 text-white/70 hover:border-white/20 hover:text-white">
+                              className="grid size-9 place-items-center rounded-md border border-white/10 text-white/70 hover:border-white/20 hover:text-white"
+                            >
                               <Eye size={16} />
                             </button>
 
@@ -441,7 +457,8 @@ export default function BarberSchedule({
                                     "CANCELED",
                                   )
                                 }
-                                className="flex h-9 items-center gap-2 rounded-md border border-red-400/40 px-3 text-xs font-black text-red-200 disabled:opacity-55">
+                                className="flex h-9 items-center gap-2 rounded-md border border-red-400/40 px-3 text-xs font-black text-red-200 disabled:opacity-55"
+                              >
                                 <XCircle size={15} />
                                 Cancelar
                               </button>
@@ -458,10 +475,12 @@ export default function BarberSchedule({
                                       "COMPLETED",
                                     )
                                   }
-                                  className="flex h-9 items-center gap-2 rounded-md bg-[#b9ff62] px-3 text-xs font-black text-black disabled:opacity-55">
+                                  className="flex h-9 items-center gap-2 rounded-md bg-[#b9ff62] px-3 text-xs font-black text-black disabled:opacity-55"
+                                >
                                   <CheckCircle2 size={15} />
                                   Concluir
                                 </button>
+
                                 <button
                                   type="button"
                                   disabled={isUpdating}
@@ -471,7 +490,8 @@ export default function BarberSchedule({
                                       "NO_SHOW",
                                     )
                                   }
-                                  className="flex h-9 items-center gap-2 rounded-md border border-amber-300/35 px-3 text-xs font-black text-amber-100 disabled:opacity-55">
+                                  className="flex h-9 items-center gap-2 rounded-md border border-amber-300/35 px-3 text-xs font-black text-amber-100 disabled:opacity-55"
+                                >
                                   <UserX size={15} />
                                   Ausente
                                 </button>
@@ -490,6 +510,7 @@ export default function BarberSchedule({
           <aside className="rounded-md border border-white/10 bg-[#171717] p-5 xl:sticky xl:top-6 xl:self-start">
             <div className="mb-5">
               <h2 className="text-sm font-black uppercase">Detalhes</h2>
+
               <p className="mt-1 text-xs text-white/45">
                 Atendimento selecionado
               </p>
@@ -502,13 +523,16 @@ export default function BarberSchedule({
                     <span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#b9ff62] text-black">
                       <UserRound size={18} />
                     </span>
+
                     <div className="min-w-0">
                       <p className="text-[10px] font-black uppercase text-white/35">
                         Cliente
                       </p>
+
                       <p className="mt-1 font-black text-white">
                         {selectedAppointment.clientName}
                       </p>
+
                       <p className="text-xs text-white/50">
                         {selectedAppointment.clientPhone || "Sem telefone"}
                       </p>
@@ -519,10 +543,12 @@ export default function BarberSchedule({
                 <dl className="grid gap-4 text-sm">
                   <div className="grid grid-cols-[22px_1fr] gap-3">
                     <Scissors size={17} className="mt-0.5 text-[#b9ff62]" />
+
                     <div>
                       <dt className="text-[10px] font-black uppercase text-white/35">
                         Serviço
                       </dt>
+
                       <dd className="mt-1 text-white/75">
                         {selectedAppointment.serviceName}
                       </dd>
@@ -534,10 +560,12 @@ export default function BarberSchedule({
                       size={17}
                       className="mt-0.5 text-[#b9ff62]"
                     />
+
                     <div>
                       <dt className="text-[10px] font-black uppercase text-white/35">
                         Data
                       </dt>
+
                       <dd className="mt-1 text-white/75">
                         {formatDate(selectedAppointment.startsAt)}
                       </dd>
@@ -546,10 +574,12 @@ export default function BarberSchedule({
 
                   <div className="grid grid-cols-[22px_1fr] gap-3">
                     <Clock3 size={17} className="mt-0.5 text-[#b9ff62]" />
+
                     <div>
                       <dt className="text-[10px] font-black uppercase text-white/35">
                         Horário
                       </dt>
+
                       <dd className="mt-1 text-white/75">
                         {formatTime(selectedAppointment.startsAt)} às{" "}
                         {formatTime(selectedAppointment.endsAt)}
@@ -562,16 +592,19 @@ export default function BarberSchedule({
                       <dt className="text-[10px] font-black uppercase text-white/35">
                         Duração
                       </dt>
+
                       <dd className="mt-1 text-white/75">
                         {getDurationLabel(
                           selectedAppointment.serviceDurationMinutes,
                         )}
                       </dd>
                     </div>
+
                     <div>
                       <dt className="text-[10px] font-black uppercase text-white/35">
                         Valor
                       </dt>
+
                       <dd className="mt-1 text-white/75">
                         {formatPrice(selectedAppointment.servicePrice)}
                       </dd>
@@ -582,9 +615,11 @@ export default function BarberSchedule({
                     <dt className="text-[10px] font-black uppercase text-white/35">
                       Status
                     </dt>
+
                     <dd className="mt-2">
                       <span
-                        className={`rounded px-2 py-1 text-[10px] font-black uppercase ${statusStyles[selectedAppointment.status]}`}>
+                        className={`rounded px-2 py-1 text-[10px] font-black uppercase ${statusStyles[selectedAppointment.status]}`}
+                      >
                         {statusLabels[selectedAppointment.status]}
                       </span>
                     </dd>
@@ -604,7 +639,8 @@ export default function BarberSchedule({
                             "CANCELED",
                           )
                         }
-                        className="flex h-10 items-center gap-2 rounded-md border border-red-400/40 px-4 text-xs font-black text-red-200 disabled:opacity-55">
+                        className="flex h-10 items-center gap-2 rounded-md border border-red-400/40 px-4 text-xs font-black text-red-200 disabled:opacity-55"
+                      >
                         <XCircle size={15} />
                         Cancelar
                       </button>
@@ -621,10 +657,12 @@ export default function BarberSchedule({
                               "COMPLETED",
                             )
                           }
-                          className="flex h-10 items-center gap-2 rounded-md bg-[#b9ff62] px-4 text-xs font-black text-black disabled:opacity-55">
+                          className="flex h-10 items-center gap-2 rounded-md bg-[#b9ff62] px-4 text-xs font-black text-black disabled:opacity-55"
+                        >
                           <CheckCircle2 size={15} />
                           Concluir
                         </button>
+
                         <button
                           type="button"
                           disabled={updatingId === selectedAppointment.id}
@@ -634,7 +672,8 @@ export default function BarberSchedule({
                               "NO_SHOW",
                             )
                           }
-                          className="flex h-10 items-center gap-2 rounded-md border border-amber-300/35 px-4 text-xs font-black text-amber-100 disabled:opacity-55">
+                          className="flex h-10 items-center gap-2 rounded-md border border-amber-300/35 px-4 text-xs font-black text-amber-100 disabled:opacity-55"
+                        >
                           <UserX size={15} />
                           Ausente
                         </button>
