@@ -1,6 +1,6 @@
 <!-- @format -->
 
-## ecnologias utilizadas
+## Tecnologias utilizadas
 
 ### Frontend e backend
 
